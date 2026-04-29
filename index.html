@@ -1,0 +1,2202 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>·</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;0,9..144,800;1,9..144,200;1,9..144,300&family=JetBrains+Mono:wght@200;300;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #07060a;
+    --bg2: #0a0810;
+    --ink: #f5efe4;
+    --ink-dim: #6a6258;
+    --ink-faint: #2a2620;
+    --blood: #d63f1f;
+    --blood-glow: #ff5a36;
+    --blood-deep: #6e1d0a;
+    --plasma: #e2b665;
+    --serum: #6ba0b4;
+    --serum-deep: #2d5a6b;
+    --void: #050306;
+  }
+
+- { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+overflow-x: hidden;
+background: var(–void);
+}
+
+body {
+color: var(–ink);
+font-family: ‘JetBrains Mono’, monospace;
+font-weight: 300;
+line-height: 1.4;
+}
+
+.ambient {
+position: fixed;
+inset: 0;
+pointer-events: none;
+z-index: 1;
+background:
+radial-gradient(ellipse at 20% 30%, rgba(214,63,31,0.06) 0%, transparent 45%),
+radial-gradient(ellipse at 80% 70%, rgba(107,160,180,0.04) 0%, transparent 50%);
+}
+
+.grain {
+position: fixed;
+inset: 0;
+pointer-events: none;
+z-index: 2;
+opacity: 0.5;
+mix-blend-mode: overlay;
+background-image: url(“data:image/svg+xml,%3Csvg viewBox=‘0 0 400 400’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cfilter id=‘n’%3E%3CfeTurbulence type=‘fractalNoise’ baseFrequency=‘0.9’ numOctaves=‘3’/%3E%3CfeColorMatrix values=‘0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.06 0’/%3E%3C/filter%3E%3Crect width=‘100%25’ height=‘100%25’ filter=‘url(%23n)’/%3E%3C/svg%3E”);
+}
+
+.stage {
+position: relative;
+height: 100vh;
+width: 100%;
+overflow: hidden;
+z-index: 3;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.stage canvas, .stage svg {
+position: absolute;
+inset: 0;
+width: 100%;
+height: 100%;
+}
+
+.whisper {
+position: absolute;
+z-index: 10;
+opacity: 0;
+transition: opacity 2s ease;
+text-align: center;
+pointer-events: none;
+}
+.whisper.show { opacity: 1; }
+
+.whisper-en {
+font-family: ‘Fraunces’, serif;
+font-style: italic;
+font-weight: 200;
+font-size: clamp(1rem, 1.8vw, 1.5rem);
+letter-spacing: 0.15em;
+color: var(–ink);
+}
+
+.chapter {
+position: absolute;
+bottom: 4vh;
+left: 4vw;
+z-index: 10;
+font-family: ‘JetBrains Mono’, monospace;
+font-size: 0.65rem;
+letter-spacing: 0.4em;
+color: var(–ink-faint);
+opacity: 0;
+transition: opacity 1.5s ease;
+}
+.chapter.show { opacity: 1; }
+
+.progress-rail {
+position: fixed;
+top: 50%;
+right: 2vw;
+height: 30vh;
+width: 1px;
+background: var(–ink-faint);
+transform: translateY(-50%);
+z-index: 50;
+}
+
+.progress-tick {
+width: 8px;
+height: 1px;
+background: var(–ink-faint);
+position: absolute;
+left: -3px;
+transition: background 0.4s ease, width 0.4s ease;
+}
+.progress-tick.passed { background: var(–blood); width: 14px; }
+.progress-tick.current { background: var(–ink); width: 14px; }
+
+/* Scene 1 */
+#stage-1 .void-dot {
+width: 12px;
+height: 12px;
+border-radius: 50%;
+background: var(–blood);
+box-shadow:
+0 0 30px var(–blood-glow),
+0 0 60px var(–blood),
+0 0 120px var(–blood-deep);
+animation: heartbeat 1.4s cubic-bezier(0.6, 0, 0.4, 1) infinite;
+position: relative;
+}
+#stage-1 .void-dot::after {
+content: ‘’;
+position: absolute;
+inset: -6px;
+border: 1px solid var(–blood);
+border-radius: 50%;
+animation: ripple 1.4s ease-out infinite;
+opacity: 0;
+}
+@keyframes heartbeat {
+0%, 60%, 100% { transform: scale(1); }
+20% { transform: scale(1.4); }
+30% { transform: scale(1); }
+40% { transform: scale(1.2); }
+}
+@keyframes ripple {
+0% { transform: scale(0.8); opacity: 0.6; }
+100% { transform: scale(8); opacity: 0; }
+}
+
+/* Scene 6 (was 5): 350 */
+#stage-six .number-stage {
+text-align: center;
+z-index: 5;
+}
+#stage-six .big-num {
+font-family: ‘Fraunces’, serif;
+font-weight: 200;
+font-size: clamp(8rem, 22vw, 20rem);
+color: var(–plasma);
+letter-spacing: -0.05em;
+line-height: 1;
+text-shadow: 0 0 80px rgba(226,182,101,0.25);
+opacity: 0;
+transform: scale(0.92);
+transition: all 2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+#stage-six.active .big-num { opacity: 1; transform: scale(1); }
+
+#stage-six .unit {
+font-family: ‘JetBrains Mono’, monospace;
+font-size: 0.85rem;
+letter-spacing: 0.4em;
+color: var(–ink-dim);
+margin-top: 1rem;
+opacity: 0;
+transition: opacity 1.5s ease 1s;
+}
+#stage-six.active .unit { opacity: 1; }
+
+#stage-six .qmark {
+font-family: ‘Fraunces’, serif;
+font-style: italic;
+font-weight: 300;
+font-size: clamp(4rem, 10vw, 8rem);
+color: var(–blood);
+margin-top: 2rem;
+opacity: 0;
+transform: rotate(-8deg) scale(0.5);
+transition: all 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) 2s;
+text-shadow: 0 0 40px rgba(214,63,31,0.4);
+}
+#stage-six.active .qmark { opacity: 1; transform: rotate(-8deg) scale(1); }
+
+/* Scene 11 (final) */
+#stage-eleven .final-line {
+position: relative;
+z-index: 20;
+font-family: ‘Fraunces’, serif;
+font-style: italic;
+font-weight: 200;
+font-size: clamp(1.6rem, 3.5vw, 2.8rem);
+letter-spacing: 0.15em;
+color: var(–ink);
+text-align: center;
+opacity: 0;
+transition: opacity 3s ease 2s;
+}
+#stage-eleven.active .final-line { opacity: 1; }
+
+#stage-eleven .final-sub {
+display: block;
+font-family: ‘JetBrains Mono’, monospace;
+font-style: normal;
+font-weight: 300;
+font-size: 0.32em;
+letter-spacing: 0.3em;
+color: var(–ink-dim);
+margin-top: 2.5rem;
+text-transform: uppercase;
+}
+
+.scroll-hint {
+position: fixed;
+bottom: 3vh;
+left: 50%;
+transform: translateX(-50%);
+font-family: ‘JetBrains Mono’, monospace;
+font-size: 0.6rem;
+letter-spacing: 0.4em;
+color: var(–ink-faint);
+z-index: 50;
+animation: hintFade 3s ease-in-out infinite;
+}
+@keyframes hintFade {
+0%, 100% { opacity: 0.3; }
+50% { opacity: 0.8; }
+}
+.scroll-hint.hidden { display: none; }
+</style>
+
+</head>
+<body>
+  <div class="ambient"></div>
+  <div class="grain"></div>
+
+  <div class="progress-rail" id="rail"></div>
+  <div class="scroll-hint" id="scroll-hint">SCROLL</div>
+
+  <!-- I · Pulse -->
+
+  <section class="stage" id="stage-1">
+    <div class="void-dot"></div>
+    <div class="chapter">·  Ⅰ  ·</div>
+  </section>
+
+  <!-- II · Thrombin curve / 5% vs 95% -->
+
+  <section class="stage" id="stage-2">
+    <svg id="svg-thrombin" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="whisper" id="whisper-2" style="bottom: 12vh; left: 0; right: 0;">
+      <span class="whisper-en">conventional tests see only this much.</span>
+    </div>
+    <div class="chapter">·  Ⅱ  ·</div>
+  </section>
+
+  <!-- III · Balance -->
+
+  <section class="stage" id="stage-3">
+    <canvas id="cv-balance"></canvas>
+    <div class="whisper" id="whisper-3" style="bottom: 14vh; left: 0; right: 0;">
+      <span class="whisper-en">looks broken.  is rebalanced.</span>
+    </div>
+    <div class="chapter">·  Ⅲ  ·</div>
+  </section>
+
+  <!-- IV · ROTEM curve -->
+
+  <section class="stage" id="stage-4">
+    <svg id="svg-rotem" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="whisper" id="whisper-4" style="bottom: 12vh; left: 0; right: 0;">
+      <span class="whisper-en">watch the clot itself.</span>
+    </div>
+    <div class="chapter">·  Ⅳ  ·</div>
+  </section>
+
+  <!-- V · Bonnet 7 → 3 -->
+
+  <section class="stage" id="stage-5">
+    <canvas id="cv-bonnet"></canvas>
+    <svg id="svg-bonnet-overlay" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet" style="pointer-events:none;"></svg>
+    <div class="chapter">·  Ⅴ  ·</div>
+  </section>
+
+  <!-- VI · 350? -->
+
+  <section class="stage" id="stage-six">
+    <canvas id="cv-six-bg"></canvas>
+    <div class="number-stage">
+      <div class="big-num">350</div>
+      <div class="unit">MG · DL⁻¹  ·  ESTIMATED</div>
+      <div class="qmark">?</div>
+    </div>
+    <div class="chapter">·  Ⅵ  ·</div>
+  </section>
+
+  <!-- VII · Scatter forms -->
+
+  <section class="stage" id="stage-7">
+    <canvas id="cv-scatter"></canvas>
+    <svg id="svg-scatter-overlay" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet" style="pointer-events:none;"></svg>
+    <div class="chapter">·  Ⅶ  ·</div>
+  </section>
+
+  <!-- VIII · Extreme -->
+
+  <section class="stage" id="stage-8">
+    <canvas id="cv-extreme"></canvas>
+    <svg id="svg-extreme-overlay" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet" style="pointer-events:none;"></svg>
+    <div class="chapter">·  Ⅷ  ·</div>
+  </section>
+
+  <!-- IX · G/MA hyperbola -->
+
+  <section class="stage" id="stage-9">
+    <svg id="svg-hyperbola" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="whisper" id="whisper-9" style="bottom: 10vh; left: 0; right: 0;">
+      <span class="whisper-en">linear in.  hyperbolic out.</span>
+    </div>
+    <div class="chapter">·  Ⅸ  ·</div>
+  </section>
+
+  <!-- X · Crystals -->
+
+  <section class="stage" id="stage-10">
+    <svg id="svg-crystals" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="chapter">·  Ⅹ  ·</div>
+  </section>
+
+  <!-- XI · Final -->
+
+  <section class="stage" id="stage-eleven">
+    <canvas id="cv-final"></canvas>
+    <div class="final-line">
+      every tool has its edge.
+      <span class="final-sub">— and every edge was found by someone who lived it first —</span>
+    </div>
+    <div class="chapter">·  Ⅺ  ·</div>
+  </section>
+
+<script>
+// ============================================================
+// UTILITIES
+// ============================================================
+const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+const easeInOutCubic = t => t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2;
+const easeOutQuart = t => 1 - Math.pow(1 - t, 4);
+const lerp = (a, b, t) => a + (b - a) * t;
+const rand = (a, b) => a + Math.random() * (b - a);
+
+function setupCanvas(canvas) {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, w: rect.width, h: rect.height };
+}
+
+// ============================================================
+// PROGRESS RAIL
+// ============================================================
+const rail = document.getElementById('rail');
+const stages = document.querySelectorAll('.stage');
+stages.forEach((_, i) => {
+  const tick = document.createElement('div');
+  tick.className = 'progress-tick';
+  tick.style.top = `${(i / (stages.length - 1)) * 100}%`;
+  tick.dataset.idx = i;
+  rail.appendChild(tick);
+});
+const ticks = document.querySelectorAll('.progress-tick');
+
+let activeStageIdx = 0;
+function updateProgress(idx) {
+  activeStageIdx = idx;
+  ticks.forEach((t, i) => {
+    t.classList.remove('passed', 'current');
+    if (i < idx) t.classList.add('passed');
+    if (i === idx) t.classList.add('current');
+  });
+}
+
+// ============================================================
+// STAGE OBSERVER
+// ============================================================
+const stageStates = {};
+stages.forEach(s => stageStates[s.id] = { played: false });
+
+const stageObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('active');
+      const idx = Array.from(stages).indexOf(entry.target);
+      updateProgress(idx);
+      const ch = entry.target.querySelector('.chapter');
+      if (ch) ch.classList.add('show');
+
+      const id = entry.target.id;
+      if (!stageStates[id].played) {
+        stageStates[id].played = true;
+        runScene(id);
+      }
+
+      if (idx > 0) document.getElementById('scroll-hint').classList.add('hidden');
+    }
+  });
+}, { threshold: 0.5 });
+
+stages.forEach(s => stageObserver.observe(s));
+
+function runScene(id) {
+  switch(id) {
+    case 'stage-2': sceneThrombin(); break;
+    case 'stage-3': sceneBalance(); break;
+    case 'stage-4': sceneRotem(); break;
+    case 'stage-5': sceneBonnet(); break;
+    case 'stage-six': sceneSixBg(); break;
+    case 'stage-7': sceneScatter(); break;
+    case 'stage-8': sceneExtreme(); break;
+    case 'stage-9': sceneHyperbola(); break;
+    case 'stage-10': sceneCrystals(); break;
+    case 'stage-eleven': sceneFinal(); break;
+  }
+}
+
+// ============================================================
+// SCENE II — THROMBIN GENERATION CURVE
+// Curve traces left to right. Then 5% red sliver fills early portion,
+// 95% blue floods the rest. Numbers emerge from each region.
+// ============================================================
+function sceneThrombin() {
+  const svg = document.getElementById('svg-thrombin');
+  svg.innerHTML = '';
+  const NS = 'http://www.w3.org/2000/svg';
+
+  const W = 1600, H = 900;
+  const margin = { top: 140, right: 200, bottom: 180, left: 200 };
+  const innerW = W - margin.left - margin.right;
+  const innerH = H - margin.top - margin.bottom;
+
+  // Defs for gradients
+  const defs = document.createElementNS(NS, 'defs');
+
+  const redGrad = document.createElementNS(NS, 'linearGradient');
+  redGrad.setAttribute('id', 'redFill');
+  redGrad.setAttribute('x1', '0'); redGrad.setAttribute('y1', '0');
+  redGrad.setAttribute('x2', '0'); redGrad.setAttribute('y2', '1');
+  redGrad.innerHTML = `
+    <stop offset="0%" stop-color="#d63f1f" stop-opacity="0.9"/>
+    <stop offset="100%" stop-color="#6e1d0a" stop-opacity="0.6"/>
+  `;
+  defs.appendChild(redGrad);
+
+  const blueGrad = document.createElementNS(NS, 'linearGradient');
+  blueGrad.setAttribute('id', 'blueFill');
+  blueGrad.setAttribute('x1', '0'); blueGrad.setAttribute('y1', '0');
+  blueGrad.setAttribute('x2', '0'); blueGrad.setAttribute('y2', '1');
+  blueGrad.innerHTML = `
+    <stop offset="0%" stop-color="#6ba0b4" stop-opacity="0.55"/>
+    <stop offset="100%" stop-color="#2d5a6b" stop-opacity="0.25"/>
+  `;
+  defs.appendChild(blueGrad);
+  svg.appendChild(defs);
+
+  // Curve: gamma-shape thrombin generation. y = a*t^n*exp(-b*t)
+  // Peak at t = n/b. Use n=2.5, b=0.07 → peak at ~36
+  function thrombinY(t) {
+    if (t <= 0) return 0;
+    return Math.pow(t, 2.5) * Math.exp(-0.07 * t);
+  }
+
+  // Find max for normalization
+  let maxY = 0;
+  for (let t = 0; t <= 100; t += 0.5) {
+    maxY = Math.max(maxY, thrombinY(t));
+  }
+
+  // Build points
+  const tMax = 100;
+  const numPts = 400;
+  const points = [];
+  for (let i = 0; i <= numPts; i++) {
+    const t = (i / numPts) * tMax;
+    const yVal = thrombinY(t) / maxY;
+    const px = margin.left + (t / tMax) * innerW;
+    const py = margin.top + innerH - yVal * innerH * 0.85;
+    points.push({ t, yVal, px, py });
+  }
+
+  // X-axis baseline
+  const baseY = margin.top + innerH;
+  const axis = document.createElementNS(NS, 'line');
+  axis.setAttribute('x1', margin.left);
+  axis.setAttribute('x2', margin.left + innerW);
+  axis.setAttribute('y1', baseY);
+  axis.setAttribute('y2', baseY);
+  axis.setAttribute('stroke', '#2a2620');
+  axis.setAttribute('stroke-width', 1);
+  axis.setAttribute('opacity', 0);
+  svg.appendChild(axis);
+  axis.style.transition = 'opacity 1s ease';
+  setTimeout(() => axis.setAttribute('opacity', '1'), 50);
+
+  // Y-axis label
+  const yLabel = document.createElementNS(NS, 'text');
+  yLabel.setAttribute('x', margin.left - 30);
+  yLabel.setAttribute('y', margin.top + innerH * 0.5);
+  yLabel.setAttribute('text-anchor', 'end');
+  yLabel.setAttribute('fill', '#6a6258');
+  yLabel.setAttribute('font-family', 'JetBrains Mono');
+  yLabel.setAttribute('font-size', '13');
+  yLabel.setAttribute('letter-spacing', '0.2em');
+  yLabel.setAttribute('transform', `rotate(-90, ${margin.left - 30}, ${margin.top + innerH * 0.5})`);
+  yLabel.setAttribute('opacity', 0);
+  yLabel.textContent = 'THROMBIN GENERATION';
+  svg.appendChild(yLabel);
+  yLabel.style.transition = 'opacity 1s ease 0.5s';
+  setTimeout(() => yLabel.setAttribute('opacity', '1'), 50);
+
+  const xLabel = document.createElementNS(NS, 'text');
+  xLabel.setAttribute('x', margin.left + innerW / 2);
+  xLabel.setAttribute('y', baseY + 35);
+  xLabel.setAttribute('text-anchor', 'middle');
+  xLabel.setAttribute('fill', '#6a6258');
+  xLabel.setAttribute('font-family', 'JetBrains Mono');
+  xLabel.setAttribute('font-size', '13');
+  xLabel.setAttribute('letter-spacing', '0.4em');
+  xLabel.setAttribute('opacity', 0);
+  xLabel.textContent = 'TIME →';
+  svg.appendChild(xLabel);
+  xLabel.style.transition = 'opacity 1s ease 0.5s';
+  setTimeout(() => xLabel.setAttribute('opacity', '1'), 50);
+
+  // Build path string
+  const pathD = points.map((p, i) => (i === 0 ? 'M' : 'L') + p.px + ',' + p.py).join(' ');
+
+  // Curve path (drawing animation)
+  const curve = document.createElementNS(NS, 'path');
+  curve.setAttribute('d', pathD);
+  curve.setAttribute('stroke', '#f5efe4');
+  curve.setAttribute('stroke-width', 2);
+  curve.setAttribute('fill', 'none');
+  curve.setAttribute('filter', 'drop-shadow(0 0 6px rgba(245,239,228,0.3))');
+  svg.appendChild(curve);
+
+  const length = curve.getTotalLength();
+  curve.style.strokeDasharray = length;
+  curve.style.strokeDashoffset = length;
+  curve.style.transition = 'stroke-dashoffset 3.5s cubic-bezier(0.4, 0, 0.2, 1) 0.8s';
+  setTimeout(() => curve.style.strokeDashoffset = '0', 50);
+
+  // After curve completes, fill the regions
+  setTimeout(() => {
+    // Calculate where 5% of cumulative area falls
+    let totalArea = 0;
+    points.forEach(p => totalArea += p.yVal);
+    let cumArea = 0;
+    let split5pct = points.length;
+    for (let i = 0; i < points.length; i++) {
+      cumArea += points[i].yVal;
+      if (cumArea / totalArea >= 0.05) {
+        split5pct = i;
+        break;
+      }
+    }
+
+    // Red 5% region path
+    const redPath = ['M ' + points[0].px + ',' + baseY];
+    for (let i = 0; i <= split5pct; i++) {
+      redPath.push('L ' + points[i].px + ',' + points[i].py);
+    }
+    redPath.push('L ' + points[split5pct].px + ',' + baseY);
+    redPath.push('Z');
+
+    const redArea = document.createElementNS(NS, 'path');
+    redArea.setAttribute('d', redPath.join(' '));
+    redArea.setAttribute('fill', 'url(#redFill)');
+    redArea.setAttribute('opacity', 0);
+    svg.appendChild(redArea);
+    redArea.style.transition = 'opacity 1.2s ease';
+    setTimeout(() => redArea.setAttribute('opacity', '1'), 50);
+
+    // Blue 95% region
+    const bluePath = ['M ' + points[split5pct].px + ',' + baseY];
+    for (let i = split5pct; i < points.length; i++) {
+      bluePath.push('L ' + points[i].px + ',' + points[i].py);
+    }
+    bluePath.push('L ' + points[points.length - 1].px + ',' + baseY);
+    bluePath.push('Z');
+
+    const blueArea = document.createElementNS(NS, 'path');
+    blueArea.setAttribute('d', bluePath.join(' '));
+    blueArea.setAttribute('fill', 'url(#blueFill)');
+    blueArea.setAttribute('opacity', 0);
+    svg.appendChild(blueArea);
+    blueArea.style.transition = 'opacity 1.5s ease 0.4s';
+    setTimeout(() => blueArea.setAttribute('opacity', '1'), 50);
+
+    // Boundary line at split
+    const splitLine = document.createElementNS(NS, 'line');
+    splitLine.setAttribute('x1', points[split5pct].px);
+    splitLine.setAttribute('x2', points[split5pct].px);
+    splitLine.setAttribute('y1', baseY);
+    splitLine.setAttribute('y2', points[split5pct].py);
+    splitLine.setAttribute('stroke', '#f5efe4');
+    splitLine.setAttribute('stroke-width', 0.7);
+    splitLine.setAttribute('stroke-dasharray', '3 4');
+    splitLine.setAttribute('opacity', 0);
+    svg.appendChild(splitLine);
+    splitLine.style.transition = 'opacity 1s ease 0.8s';
+    setTimeout(() => splitLine.setAttribute('opacity', '0.5'), 50);
+
+    // Numbers — 5% small over red region
+    setTimeout(() => {
+      const num5 = document.createElementNS(NS, 'text');
+      num5.setAttribute('x', points[split5pct].px - 30);
+      num5.setAttribute('y', baseY - 30);
+      num5.setAttribute('text-anchor', 'end');
+      num5.setAttribute('fill', '#d63f1f');
+      num5.setAttribute('font-family', 'Fraunces');
+      num5.setAttribute('font-weight', '300');
+      num5.setAttribute('font-size', '52');
+      num5.setAttribute('opacity', 0);
+      num5.setAttribute('filter', 'drop-shadow(0 0 12px rgba(214,63,31,0.4))');
+      num5.textContent = '5%';
+      svg.appendChild(num5);
+      num5.style.transition = 'opacity 1.5s ease';
+      setTimeout(() => num5.setAttribute('opacity', '0.95'), 50);
+
+      const lbl5 = document.createElementNS(NS, 'text');
+      lbl5.setAttribute('x', points[split5pct].px - 30);
+      lbl5.setAttribute('y', baseY - 5);
+      lbl5.setAttribute('text-anchor', 'end');
+      lbl5.setAttribute('fill', '#6a6258');
+      lbl5.setAttribute('font-family', 'JetBrains Mono');
+      lbl5.setAttribute('font-size', '11');
+      lbl5.setAttribute('letter-spacing', '0.25em');
+      lbl5.setAttribute('opacity', 0);
+      lbl5.textContent = 'PT · aPTT';
+      svg.appendChild(lbl5);
+      lbl5.style.transition = 'opacity 1.5s ease 0.3s';
+      setTimeout(() => lbl5.setAttribute('opacity', '0.7'), 50);
+
+      const num95 = document.createElementNS(NS, 'text');
+      num95.setAttribute('x', margin.left + innerW * 0.55);
+      num95.setAttribute('y', margin.top + innerH * 0.45);
+      num95.setAttribute('text-anchor', 'middle');
+      num95.setAttribute('fill', '#f5efe4');
+      num95.setAttribute('font-family', 'Fraunces');
+      num95.setAttribute('font-weight', '200');
+      num95.setAttribute('font-size', '160');
+      num95.setAttribute('opacity', 0);
+      num95.setAttribute('filter', 'drop-shadow(0 0 30px rgba(107,160,180,0.4))');
+      num95.textContent = '95%';
+      svg.appendChild(num95);
+      num95.style.transition = 'opacity 2s ease';
+      setTimeout(() => num95.setAttribute('opacity', '0.95'), 50);
+
+      const lbl95 = document.createElementNS(NS, 'text');
+      lbl95.setAttribute('x', margin.left + innerW * 0.55);
+      lbl95.setAttribute('y', margin.top + innerH * 0.45 + 35);
+      lbl95.setAttribute('text-anchor', 'middle');
+      lbl95.setAttribute('fill', '#6ba0b4');
+      lbl95.setAttribute('font-family', 'JetBrains Mono');
+      lbl95.setAttribute('font-size', '14');
+      lbl95.setAttribute('letter-spacing', '0.4em');
+      lbl95.setAttribute('opacity', 0);
+      lbl95.textContent = 'VET · INVISIBLE TO CCTs';
+      svg.appendChild(lbl95);
+      lbl95.style.transition = 'opacity 2s ease 0.5s';
+      setTimeout(() => lbl95.setAttribute('opacity', '0.6'), 50);
+
+      // Show whisper
+      setTimeout(() => {
+        document.getElementById('whisper-2').classList.add('show');
+      }, 1500);
+    }, 1200);
+  }, 4500);
+}
+
+// ============================================================
+// SCENE III — BALANCE (rebalanced coagulation)
+// ============================================================
+function sceneBalance() {
+  const canvas = document.getElementById('cv-balance');
+  const { ctx, w, h } = setupCanvas(canvas);
+
+  const procoag = [
+    { txt: 'PT 18s' }, { txt: 'INR 2.8' }, { txt: 'F.II 35%' },
+    { txt: 'F.VII 28%' }, { txt: 'Fib 1.2' }, { txt: 'F.X 40%' }
+  ];
+  const anticoag = [
+    { txt: 'AT 38%' }, { txt: 'PC 25%' }, { txt: 'PS 30%' },
+    { txt: 'TFPI ↓' }, { txt: 'TM ↓' }, { txt: 'α2-AP ↓' }
+  ];
+
+  const cx = w / 2, cy = h / 2;
+  const beamHalf = Math.min(w * 0.32, 380);
+  const colW = beamHalf * 0.85;
+  const stackY = cy - 20;
+
+  const parts = [];
+  procoag.forEach((p, i) => {
+    parts.push({
+      txt: p.txt,
+      x: rand(-200, -50),
+      y: rand(0, h),
+      tx: cx - beamHalf + rand(-colW * 0.4, colW * 0.4),
+      ty: stackY - 110 - i * 28 + rand(-8, 8),
+      color: '#d63f1f',
+      size: rand(13, 16),
+      delay: i * 120,
+      progress: 0,
+      side: 'L'
+    });
+  });
+  anticoag.forEach((p, i) => {
+    parts.push({
+      txt: p.txt,
+      x: rand(w + 50, w + 200),
+      y: rand(0, h),
+      tx: cx + beamHalf + rand(-colW * 0.4, colW * 0.4),
+      ty: stackY - 110 - i * 28 + rand(-8, 8),
+      color: '#6ba0b4',
+      size: rand(13, 16),
+      delay: 600 + i * 120,
+      progress: 0,
+      side: 'R'
+    });
+  });
+
+  const t0 = performance.now();
+  let beamProgress = 0;
+  let wobble = 0;
+
+  function frame(now) {
+    const t = now - t0;
+
+    ctx.fillStyle = 'rgba(7, 6, 10, 0.18)';
+    ctx.fillRect(0, 0, w, h);
+
+    parts.forEach(p => {
+      const localT = Math.max(0, t - p.delay);
+      p.progress = Math.min(1, localT / 1800);
+      const eased = easeOutCubic(p.progress);
+      const cx_p = lerp(p.x, p.tx, eased);
+      const cy_p = lerp(p.y, p.ty, eased);
+
+      let wobbleY = 0;
+      if (p.progress >= 1) {
+        const sign = p.side === 'L' ? -1 : 1;
+        wobbleY = sign * wobble * 0.3;
+      }
+
+      ctx.font = `300 ${p.size}px 'JetBrains Mono', monospace`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.shadowColor = p.color;
+      ctx.shadowBlur = 12 * p.progress;
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = p.progress;
+      ctx.fillText(p.txt, cx_p, cy_p + wobbleY);
+      ctx.shadowBlur = 0;
+      ctx.globalAlpha = 1;
+    });
+
+    const beamStart = 2200;
+    if (t > beamStart) {
+      beamProgress = Math.min(1, (t - beamStart) / 1500);
+      const eased = easeOutQuart(beamProgress);
+      const len = beamHalf * eased;
+
+      if (beamProgress >= 1) {
+        wobble = Math.sin((t - beamStart - 1500) * 0.0015) * 4;
+      }
+
+      const angle = wobble * 0.005;
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(angle);
+
+      ctx.strokeStyle = '#f5efe4';
+      ctx.lineWidth = 1.5;
+      ctx.globalAlpha = 0.7;
+      ctx.beginPath();
+      ctx.moveTo(-len, 0);
+      ctx.lineTo(len, 0);
+      ctx.stroke();
+
+      ctx.globalAlpha = 0.6;
+      ctx.lineWidth = 1;
+      [-1, 1].forEach(s => {
+        ctx.beginPath();
+        ctx.moveTo(s * len, 0);
+        ctx.lineTo(s * len, 18);
+        ctx.stroke();
+        ctx.strokeStyle = s === -1 ? '#d63f1f' : '#6ba0b4';
+        ctx.beginPath();
+        ctx.ellipse(s * len, 22, colW * 0.6, 4, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.strokeStyle = '#f5efe4';
+      });
+
+      ctx.fillStyle = '#f5efe4';
+      ctx.globalAlpha = 0.7;
+      ctx.beginPath();
+      ctx.arc(0, 0, 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+      ctx.globalAlpha = 1;
+
+      ctx.strokeStyle = '#2a2620';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx, cy + 80);
+      ctx.stroke();
+    }
+
+    if (t > 4200) {
+      document.getElementById('whisper-3').classList.add('show');
+    }
+
+    if (t < 12000) requestAnimationFrame(frame);
+    else {
+      const loopFrame = (n) => {
+        const tt = n - t0;
+        wobble = Math.sin(tt * 0.001) * 3;
+        ctx.fillStyle = 'rgba(7, 6, 10, 0.5)';
+        ctx.fillRect(0, 0, w, h);
+        parts.forEach(p => {
+          ctx.font = `300 ${p.size}px 'JetBrains Mono', monospace`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          const sign = p.side === 'L' ? -1 : 1;
+          ctx.shadowColor = p.color;
+          ctx.shadowBlur = 10;
+          ctx.fillStyle = p.color;
+          ctx.fillText(p.txt, p.tx, p.ty + sign * wobble * 0.3);
+          ctx.shadowBlur = 0;
+        });
+        const angle = wobble * 0.005;
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(angle);
+        ctx.strokeStyle = '#f5efe4';
+        ctx.globalAlpha = 0.5;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(-beamHalf, 0); ctx.lineTo(beamHalf, 0);
+        ctx.stroke();
+        ctx.restore();
+        ctx.globalAlpha = 1;
+        requestAnimationFrame(loopFrame);
+      };
+      requestAnimationFrame(loopFrame);
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+// ============================================================
+// SCENE IV — TEG/ROTEM CURVE
+// ============================================================
+function sceneRotem() {
+  const svg = document.getElementById('svg-rotem');
+  svg.innerHTML = '';
+  const NS = 'http://www.w3.org/2000/svg';
+
+  const W = 1600, H = 900;
+  const baseY = H / 2;
+  const startX = 200;
+  const endX = 1400;
+
+  const axis = document.createElementNS(NS, 'line');
+  axis.setAttribute('x1', startX);
+  axis.setAttribute('x2', endX);
+  axis.setAttribute('y1', baseY);
+  axis.setAttribute('y2', baseY);
+  axis.setAttribute('stroke', '#2a2620');
+  axis.setAttribute('stroke-width', 1);
+  axis.setAttribute('stroke-dasharray', '2 6');
+  svg.appendChild(axis);
+
+  function curveY(progress) {
+    const p = progress;
+    if (p < 0.15) return 0;
+    if (p < 0.5) {
+      const localP = (p - 0.15) / 0.35;
+      return 280 * (1 - Math.exp(-localP * 3.5));
+    }
+    if (p < 0.75) return 280 * (1 - Math.exp(-3.5));
+    const localP = (p - 0.75) / 0.25;
+    return (280 * (1 - Math.exp(-3.5))) * (1 - localP * 0.35);
+  }
+
+  const totalDots = 180;
+  const dots = [];
+  for (let i = 0; i < totalDots; i++) {
+    const p = i / (totalDots - 1);
+    const x = lerp(startX, endX, p);
+    const offset = curveY(p);
+    dots.push({ x, yUp: baseY - offset, yDn: baseY + offset, p });
+  }
+
+  dots.forEach((d, i) => {
+    const dot1 = document.createElementNS(NS, 'circle');
+    dot1.setAttribute('cx', d.x);
+    dot1.setAttribute('cy', d.yUp);
+    dot1.setAttribute('r', 0);
+    dot1.setAttribute('fill', '#d63f1f');
+    dot1.setAttribute('filter', 'drop-shadow(0 0 4px #ff5a36)');
+    svg.appendChild(dot1);
+
+    const dot2 = document.createElementNS(NS, 'circle');
+    dot2.setAttribute('cx', d.x);
+    dot2.setAttribute('cy', d.yDn);
+    dot2.setAttribute('r', 0);
+    dot2.setAttribute('fill', '#d63f1f');
+    dot2.setAttribute('filter', 'drop-shadow(0 0 4px #ff5a36)');
+    dot2.setAttribute('opacity', '0.55');
+    svg.appendChild(dot2);
+
+    setTimeout(() => {
+      dot1.style.transition = 'r 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+      dot2.style.transition = 'r 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+      dot1.setAttribute('r', 2.2);
+      dot2.setAttribute('r', 2.2);
+    }, i * 22);
+  });
+
+  setTimeout(() => {
+    const markers = [
+      { p: 0.18, color: '#e2b665', label: 'CT' },
+      { p: 0.32, color: '#6ba0b4', label: 'α' },
+      { p: 0.6, color: '#f5efe4', label: 'MCF' },
+      { p: 0.88, color: '#d63f1f', label: 'LY' }
+    ];
+    markers.forEach((m, i) => {
+      setTimeout(() => {
+        const x = lerp(startX, endX, m.p);
+        const tick = document.createElementNS(NS, 'line');
+        tick.setAttribute('x1', x);
+        tick.setAttribute('x2', x);
+        tick.setAttribute('y1', baseY - 320);
+        tick.setAttribute('y2', baseY + 320);
+        tick.setAttribute('stroke', m.color);
+        tick.setAttribute('stroke-width', 0.5);
+        tick.setAttribute('stroke-dasharray', '3 5');
+        tick.setAttribute('opacity', 0);
+        svg.appendChild(tick);
+        tick.style.transition = 'opacity 1s ease';
+        setTimeout(() => tick.setAttribute('opacity', '0.5'), 50);
+
+        const lbl = document.createElementNS(NS, 'text');
+        lbl.setAttribute('x', x);
+        lbl.setAttribute('y', baseY - 340);
+        lbl.setAttribute('text-anchor', 'middle');
+        lbl.setAttribute('fill', m.color);
+        lbl.setAttribute('font-family', 'JetBrains Mono');
+        lbl.setAttribute('font-size', '14');
+        lbl.setAttribute('letter-spacing', '0.15em');
+        lbl.setAttribute('opacity', 0);
+        lbl.textContent = m.label;
+        svg.appendChild(lbl);
+        lbl.style.transition = 'opacity 1s ease';
+        setTimeout(() => lbl.setAttribute('opacity', '0.85'), 50);
+      }, i * 250);
+    });
+
+    setTimeout(() => {
+      document.getElementById('whisper-4').classList.add('show');
+    }, 1200);
+  }, totalDots * 22 + 400);
+}
+
+// ============================================================
+// SCENE V — BONNET 7 → 3
+// ============================================================
+function sceneBonnet() {
+  const canvas = document.getElementById('cv-bonnet');
+  const overlay = document.getElementById('svg-bonnet-overlay');
+  overlay.innerHTML = '';
+  const { ctx, w, h } = setupCanvas(canvas);
+
+  const cx = w / 2, cy = h / 2;
+  const stackXL = w * 0.32;
+  const stackXR = w * 0.68;
+  const baseY = cy + 130;
+
+  const N_LEFT = 41, N_RIGHT = 40;
+  const dotR = 6;
+  const layerH = 26;
+
+  function buildStack(n, layers, perLayer, baseX, baseY) {
+    const positions = [];
+    let count = 0;
+    for (let layer = 0; layer < layers && count < n; layer++) {
+      const inLayer = Math.min(perLayer, n - count);
+      for (let i = 0; i < inLayer; i++) {
+        const xOffset = (i - (inLayer - 1) / 2) * (dotR * 2.4);
+        positions.push({ x: baseX + xOffset, y: baseY - layer * layerH });
+        count++;
+      }
+    }
+    return positions;
+  }
+
+  const leftTargets = buildStack(N_LEFT, 7, 6, stackXL, baseY);
+  const rightTargets = buildStack(N_RIGHT, 3, 14, stackXR, baseY);
+
+  const dots = [];
+  for (let i = 0; i < N_LEFT; i++) {
+    dots.push({
+      x: rand(0, w), y: rand(0, h),
+      tx: leftTargets[i].x, ty: leftTargets[i].y,
+      color: '#6a6258', side: 'L', delay: i * 30
+    });
+  }
+  for (let i = 0; i < N_RIGHT; i++) {
+    dots.push({
+      x: rand(0, w), y: rand(0, h),
+      tx: rightTargets[i].x, ty: rightTargets[i].y,
+      color: '#d63f1f', side: 'R', delay: 800 + i * 30
+    });
+  }
+
+  const t0 = performance.now();
+
+  function frame(now) {
+    const t = now - t0;
+    ctx.fillStyle = 'rgba(7, 6, 10, 0.2)';
+    ctx.fillRect(0, 0, w, h);
+
+    dots.forEach(d => {
+      const localT = Math.max(0, t - d.delay);
+      const prog = Math.min(1, localT / 1500);
+      const eased = easeOutCubic(prog);
+      const x = lerp(d.x, d.tx, eased);
+      const y = lerp(d.y, d.ty, eased);
+
+      ctx.beginPath();
+      ctx.arc(x, y, dotR, 0, Math.PI * 2);
+      ctx.fillStyle = d.color;
+      ctx.shadowColor = d.color;
+      ctx.shadowBlur = prog > 0.9 ? 8 : 0;
+      ctx.globalAlpha = 0.85;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.globalAlpha = 1;
+    });
+
+    if (t < 4500) requestAnimationFrame(frame);
+    else {
+      const loop = (n) => {
+        const tt = n - t0;
+        ctx.fillStyle = 'rgba(7, 6, 10, 0.3)';
+        ctx.fillRect(0, 0, w, h);
+        const breath = 1 + Math.sin(tt * 0.0015) * 0.04;
+        const deceased = window._bonnetDeceased;
+        dots.forEach((d, idx) => {
+          const isDead = deceased && deceased.has(idx);
+          ctx.beginPath();
+          ctx.arc(d.tx, d.ty, isDead ? dotR * 0.85 : dotR * breath, 0, Math.PI * 2);
+          ctx.fillStyle = isDead ? '#3a3530' : d.color;
+          ctx.shadowColor = isDead ? 'transparent' : d.color;
+          ctx.shadowBlur = isDead ? 0 : 8;
+          ctx.globalAlpha = isDead ? 0.5 : 0.85;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        });
+        ctx.globalAlpha = 1;
+        requestAnimationFrame(loop);
+      };
+      requestAnimationFrame(loop);
+    }
+  }
+  requestAnimationFrame(frame);
+
+  const NS = 'http://www.w3.org/2000/svg';
+  setTimeout(() => {
+    const rect = document.getElementById('stage-5').getBoundingClientRect();
+    const scaleX = 1600 / rect.width;
+    const scaleY = 900 / rect.height;
+
+    const num7 = document.createElementNS(NS, 'text');
+    num7.setAttribute('x', stackXL * scaleX);
+    num7.setAttribute('y', (baseY - 8 * layerH) * scaleY);
+    num7.setAttribute('text-anchor', 'middle');
+    num7.setAttribute('fill', '#6a6258');
+    num7.setAttribute('font-family', 'Fraunces');
+    num7.setAttribute('font-weight', '300');
+    num7.setAttribute('font-size', '180');
+    num7.setAttribute('opacity', 0);
+    num7.textContent = '7';
+    overlay.appendChild(num7);
+    num7.style.transition = 'opacity 1.2s ease';
+    setTimeout(() => num7.setAttribute('opacity', '0.9'), 50);
+
+    const arrow = document.createElementNS(NS, 'text');
+    arrow.setAttribute('x', cx * scaleX);
+    arrow.setAttribute('y', (baseY - 6 * layerH) * scaleY);
+    arrow.setAttribute('text-anchor', 'middle');
+    arrow.setAttribute('fill', '#f5efe4');
+    arrow.setAttribute('font-family', 'Fraunces');
+    arrow.setAttribute('font-weight', '200');
+    arrow.setAttribute('font-size', '90');
+    arrow.setAttribute('opacity', 0);
+    arrow.textContent = '→';
+    overlay.appendChild(arrow);
+    arrow.style.transition = 'opacity 1.2s ease 0.4s';
+    setTimeout(() => arrow.setAttribute('opacity', '0.6'), 50);
+
+    const num3 = document.createElementNS(NS, 'text');
+    num3.setAttribute('x', stackXR * scaleX);
+    num3.setAttribute('y', (baseY - 8 * layerH) * scaleY);
+    num3.setAttribute('text-anchor', 'middle');
+    num3.setAttribute('fill', '#d63f1f');
+    num3.setAttribute('font-family', 'Fraunces');
+    num3.setAttribute('font-weight', '300');
+    num3.setAttribute('font-size', '180');
+    num3.setAttribute('opacity', 0);
+    num3.setAttribute('filter', 'drop-shadow(0 0 20px #d63f1f)');
+    num3.textContent = '3';
+    overlay.appendChild(num3);
+    num3.style.transition = 'opacity 1.2s ease 0.8s';
+    setTimeout(() => num3.setAttribute('opacity', '1'), 50);
+
+    // Add transfusion units label
+    const lblT = document.createElementNS(NS, 'text');
+    lblT.setAttribute('x', cx * scaleX);
+    lblT.setAttribute('y', (baseY + 80) * scaleY);
+    lblT.setAttribute('text-anchor', 'middle');
+    lblT.setAttribute('fill', '#6a6258');
+    lblT.setAttribute('font-family', 'JetBrains Mono');
+    lblT.setAttribute('font-size', '14');
+    lblT.setAttribute('letter-spacing', '0.4em');
+    lblT.setAttribute('opacity', 0);
+    lblT.textContent = 'TRANSFUSION UNITS · MEDIAN';
+    overlay.appendChild(lblT);
+    lblT.style.transition = 'opacity 1.5s ease 1.5s';
+    setTimeout(() => lblT.setAttribute('opacity', '0.6'), 50);
+
+    // "every dot is one patient" — first plant
+    const everyDot = document.createElementNS(NS, 'text');
+    everyDot.setAttribute('x', cx * scaleX);
+    everyDot.setAttribute('y', (baseY + 130) * scaleY);
+    everyDot.setAttribute('text-anchor', 'middle');
+    everyDot.setAttribute('fill', '#f5efe4');
+    everyDot.setAttribute('font-family', 'Fraunces');
+    everyDot.setAttribute('font-style', 'italic');
+    everyDot.setAttribute('font-weight', '300');
+    everyDot.setAttribute('font-size', '24');
+    everyDot.setAttribute('letter-spacing', '0.2em');
+    everyDot.setAttribute('opacity', 0);
+    everyDot.textContent = 'every dot — is one patient.';
+    overlay.appendChild(everyDot);
+    everyDot.style.transition = 'opacity 2.5s ease 3s';
+    setTimeout(() => everyDot.setAttribute('opacity', '0.85'), 50);
+
+    // After the line appears, some dots fade to gray (they died — but stay in place)
+    setTimeout(() => {
+      const deceasedFraction = 0.18;
+      window._bonnetDeceased = new Set();
+      const N = N_LEFT + N_RIGHT;
+      const numDeceased = Math.floor(N * deceasedFraction);
+      while (window._bonnetDeceased.size < numDeceased) {
+        window._bonnetDeceased.add(Math.floor(Math.random() * N));
+      }
+    }, 5500);
+  }, 3500);
+}
+
+// ============================================================
+// SCENE VI — 350? background
+// ============================================================
+function sceneSixBg() {
+  const canvas = document.getElementById('cv-six-bg');
+  const { ctx, w, h } = setupCanvas(canvas);
+
+  const motes = [];
+  for (let i = 0; i < 60; i++) {
+    motes.push({
+      x: rand(0, w), y: rand(0, h),
+      vx: rand(-0.15, 0.15), vy: rand(-0.15, 0.15),
+      r: rand(0.5, 2),
+      hue: Math.random() < 0.5 ? '#e2b665' : '#d63f1f',
+      a: rand(0.2, 0.6)
+    });
+  }
+
+  function frame() {
+    ctx.fillStyle = 'rgba(7, 6, 10, 0.15)';
+    ctx.fillRect(0, 0, w, h);
+    motes.forEach(m => {
+      m.x += m.vx; m.y += m.vy;
+      if (m.x < 0) m.x = w; if (m.x > w) m.x = 0;
+      if (m.y < 0) m.y = h; if (m.y > h) m.y = 0;
+      ctx.beginPath();
+      ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+      ctx.fillStyle = m.hue;
+      ctx.globalAlpha = m.a;
+      ctx.shadowColor = m.hue;
+      ctx.shadowBlur = 8;
+      ctx.fill();
+    });
+    ctx.shadowBlur = 0;
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+// ============================================================
+// SCENE VII — SCATTER
+// ============================================================
+function sceneScatter() {
+  const canvas = document.getElementById('cv-scatter');
+  const overlay = document.getElementById('svg-scatter-overlay');
+  overlay.innerHTML = '';
+  const { ctx, w, h } = setupCanvas(canvas);
+
+  const margin = { top: 120, right: 120, bottom: 120, left: 140 };
+  const innerW = w - margin.left - margin.right;
+  const innerH = h - margin.top - margin.bottom;
+
+  const points = [];
+  for (let i = 0; i < 118; i++) {
+    const x = rand(200, 450);
+    const y = 1.4 * x + 100 + rand(-180, 180);
+    points.push({ cx: x, fy: Math.max(50, y), color: '#6ba0b4' });
+  }
+  for (let i = 0; i < 265; i++) {
+    const x = rand(50, 700);
+    const y = 1.3 * x + 80 + rand(-200, 200);
+    points.push({ cx: x, fy: Math.max(40, y), color: '#d63f1f' });
+  }
+  for (let i = 0; i < 52; i++) {
+    const x = rand(300, 720);
+    const y = 1.2 * x + 200 + rand(-220, 220);
+    points.push({ cx: x, fy: Math.max(50, y), color: '#e2b665' });
+  }
+
+  const xMax = 800, yMax = 1100;
+  function dx(v) { return margin.left + (v / xMax) * innerW; }
+  function dy(v) { return h - margin.bottom - (v / yMax) * innerH; }
+
+  const particles = points.map(p => {
+    const target = { x: dx(p.cx), y: dy(p.fy) };
+    const edge = Math.floor(rand(0, 4));
+    let sx, sy;
+    if (edge === 0) { sx = rand(0, w); sy = -rand(20, 200); }
+    else if (edge === 1) { sx = w + rand(20, 200); sy = rand(0, h); }
+    else if (edge === 2) { sx = rand(0, w); sy = h + rand(20, 200); }
+    else { sx = -rand(20, 200); sy = rand(0, h); }
+
+    const ctrlAngle = rand(0, Math.PI * 2);
+    const ctrlR = rand(150, 300);
+    const ctrlX = lerp(sx, target.x, 0.5) + Math.cos(ctrlAngle) * ctrlR;
+    const ctrlY = lerp(sy, target.y, 0.5) + Math.sin(ctrlAngle) * ctrlR;
+
+    return {
+      sx, sy, tx: target.x, ty: target.y,
+      cx: ctrlX, cy: ctrlY,
+      x: sx, y: sy,
+      color: p.color,
+      r: rand(2.2, 3.5),
+      delay: rand(0, 2500),
+      duration: rand(2200, 3000),
+      progress: 0,
+      pulse: rand(0, Math.PI * 2)
+    };
+  });
+
+  const t0 = performance.now();
+  let phase = 0;
+
+  function frame(now) {
+    const t = now - t0;
+    ctx.fillStyle = 'rgba(7, 6, 10, 0.16)';
+    ctx.fillRect(0, 0, w, h);
+
+    if (t > 3500) {
+      const gridA = Math.min(0.08, (t - 3500) / 5000);
+      ctx.strokeStyle = `rgba(106, 98, 88, ${gridA})`;
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.moveTo(dx(0), dy(0));
+      ctx.lineTo(dx(800), dy(800));
+      ctx.stroke();
+    }
+
+    let allSettled = true;
+    particles.forEach(p => {
+      const localT = Math.max(0, t - p.delay);
+      p.progress = Math.min(1, localT / p.duration);
+      if (p.progress < 1) allSettled = false;
+
+      const eased = easeOutCubic(p.progress);
+      const u = 1 - eased;
+      p.x = u * u * p.sx + 2 * u * eased * p.cx + eased * eased * p.tx;
+      p.y = u * u * p.sy + 2 * u * eased * p.cy + eased * eased * p.ty;
+
+      if (p.progress < 1 && p.progress > 0.05) {
+        const trailEased = easeOutCubic(Math.max(0, p.progress - 0.04));
+        const u2 = 1 - trailEased;
+        const trailX = u2 * u2 * p.sx + 2 * u2 * trailEased * p.cx + trailEased * trailEased * p.tx;
+        const trailY = u2 * u2 * p.sy + 2 * u2 * trailEased * p.cy + trailEased * trailEased * p.ty;
+        ctx.strokeStyle = p.color;
+        ctx.globalAlpha = 0.15;
+        ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        ctx.moveTo(trailX, trailY);
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+
+      let r = p.r;
+      let glow = 6;
+      if (p.progress >= 1) {
+        if (p.deceased) {
+          r = p.r * 0.85;
+          glow = 0;
+        } else {
+          const pulse = Math.sin(t * 0.001 + p.pulse) * 0.3 + 1;
+          r = p.r * pulse;
+          glow = 8 + pulse * 4;
+        }
+      } else {
+        glow = 12;
+      }
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+      if (p.deceased) {
+        ctx.fillStyle = '#3a3530';
+        ctx.shadowBlur = 0;
+        ctx.globalAlpha = 0.5;
+      } else {
+        ctx.fillStyle = p.color;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = glow;
+        ctx.globalAlpha = p.progress < 1 ? 0.85 : 0.7;
+      }
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.globalAlpha = 1;
+    });
+
+    if (allSettled && phase === 0) {
+      phase = 1;
+      setTimeout(() => emergeRValue(), 800);
+    }
+
+    requestAnimationFrame(frame);
+  }
+
+  function emergeRValue() {
+    const NS = 'http://www.w3.org/2000/svg';
+
+    const rText = document.createElementNS(NS, 'text');
+    rText.setAttribute('x', 1600 * 0.78);
+    rText.setAttribute('y', 900 * 0.32);
+    rText.setAttribute('text-anchor', 'middle');
+    rText.setAttribute('fill', '#f5efe4');
+    rText.setAttribute('font-family', 'Fraunces');
+    rText.setAttribute('font-weight', '200');
+    rText.setAttribute('font-style', 'italic');
+    rText.setAttribute('font-size', '180');
+    rText.setAttribute('opacity', 0);
+    rText.textContent = 'r';
+    overlay.appendChild(rText);
+
+    const eqText = document.createElementNS(NS, 'text');
+    eqText.setAttribute('x', 1600 * 0.78);
+    eqText.setAttribute('y', 900 * 0.48);
+    eqText.setAttribute('text-anchor', 'middle');
+    eqText.setAttribute('fill', '#e2b665');
+    eqText.setAttribute('font-family', 'Fraunces');
+    eqText.setAttribute('font-weight', '200');
+    eqText.setAttribute('font-size', '120');
+    eqText.setAttribute('opacity', 0);
+    eqText.setAttribute('letter-spacing', '-0.02em');
+    eqText.textContent = '0.58';
+    overlay.appendChild(eqText);
+
+    rText.style.transition = 'opacity 2s ease';
+    eqText.style.transition = 'opacity 2s ease 0.8s';
+    setTimeout(() => {
+      rText.setAttribute('opacity', '0.6');
+      eqText.setAttribute('opacity', '0.95');
+    }, 50);
+
+    // "every dot is one patient" — second plant, slightly more deliberate
+    const everyDot2 = document.createElementNS(NS, 'text');
+    everyDot2.setAttribute('x', 1600 * 0.5);
+    everyDot2.setAttribute('y', 900 * 0.93);
+    everyDot2.setAttribute('text-anchor', 'middle');
+    everyDot2.setAttribute('fill', '#f5efe4');
+    everyDot2.setAttribute('font-family', 'Fraunces');
+    everyDot2.setAttribute('font-style', 'italic');
+    everyDot2.setAttribute('font-weight', '300');
+    everyDot2.setAttribute('font-size', '26');
+    everyDot2.setAttribute('letter-spacing', '0.2em');
+    everyDot2.setAttribute('opacity', 0);
+    everyDot2.textContent = 'every dot — is one patient.';
+    overlay.appendChild(everyDot2);
+    everyDot2.style.transition = 'opacity 2.5s ease 2s';
+    setTimeout(() => everyDot2.setAttribute('opacity', '0.85'), 50);
+
+    // After the caption shows, mark a small fraction as "deceased"
+    setTimeout(() => {
+      const fraction = 0.06;
+      const N = particles.length;
+      const numDeceased = Math.floor(N * fraction);
+      let marked = 0;
+      while (marked < numDeceased) {
+        const idx = Math.floor(Math.random() * N);
+        if (!particles[idx].deceased) {
+          particles[idx].deceased = true;
+          marked++;
+        }
+      }
+    }, 5000);
+  }
+
+  requestAnimationFrame(frame);
+}
+
+// ============================================================
+// SCENE VIII — EXTREME (FIXED r=0.20 bug)
+// ============================================================
+function sceneExtreme() {
+  const canvas = document.getElementById('cv-extreme');
+  const overlay = document.getElementById('svg-extreme-overlay');
+  overlay.innerHTML = '';
+  const { ctx, w, h } = setupCanvas(canvas);
+
+  const margin = { top: 130, right: 200, bottom: 180, left: 200 };
+  const innerW = w - margin.left - margin.right;
+  const innerH = h - margin.top - margin.bottom;
+
+  const xMax = 200, yMax = 500;
+  function dx(v) { return margin.left + (v / xMax) * innerW; }
+  function dy(v) { return h - margin.bottom - (v / yMax) * innerH; }
+
+  const N = 31;
+  const points = [];
+  for (let i = 0; i < N; i++) {
+    const x = rand(50, 150);
+    const y = rand(60, 450);
+    points.push({
+      cx: x, fy: y,
+      tx: dx(x), ty: dy(y),
+      sx: rand(0, w), sy: rand(0, h),
+      r: rand(3, 5),
+      delay: rand(0, 1500),
+      progress: 0
+    });
+  }
+
+  const t0 = performance.now();
+
+  function frame(now) {
+    const t = now - t0;
+    ctx.fillStyle = 'rgba(7, 6, 10, 0.18)';
+    ctx.fillRect(0, 0, w, h);
+
+    if (t > 2500) {
+      const a = Math.min(0.07, (t - 2500) / 4000);
+      const grad = ctx.createLinearGradient(0, h, 0, 0);
+      grad.addColorStop(0, `rgba(214,63,31,${a})`);
+      grad.addColorStop(1, 'rgba(214,63,31,0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(margin.left, margin.top, innerW, innerH);
+    }
+
+    points.forEach(p => {
+      const localT = Math.max(0, t - p.delay);
+      p.progress = Math.min(1, localT / 2200);
+      const eased = easeOutCubic(p.progress);
+      const x = lerp(p.sx, p.tx, eased);
+      const y = lerp(p.sy, p.ty, eased);
+
+      let twitchX = 0, twitchY = 0;
+      if (p.progress >= 1 && !p.deceased) {
+        twitchX = Math.sin(t * 0.002 + p.tx * 0.01) * 1.5;
+        twitchY = Math.cos(t * 0.0018 + p.ty * 0.01) * 1.5;
+      }
+
+      ctx.beginPath();
+      ctx.arc(x + twitchX, y + twitchY, p.r, 0, Math.PI * 2);
+      if (p.deceased) {
+        ctx.fillStyle = '#3a3530';
+        ctx.shadowBlur = 0;
+        ctx.globalAlpha = 0.5;
+      } else {
+        ctx.fillStyle = '#d63f1f';
+        ctx.shadowColor = '#ff5a36';
+        ctx.shadowBlur = 14;
+        ctx.globalAlpha = 0.85;
+      }
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.globalAlpha = 1;
+    });
+
+    requestAnimationFrame(frame);
+  }
+
+  // FIXED: Render r = 0.20 cleanly without the conflicting setInterval pulse
+  setTimeout(() => {
+    const NS = 'http://www.w3.org/2000/svg';
+
+    // Use a group, position centered upper-right area
+    const rText = document.createElementNS(NS, 'text');
+    rText.setAttribute('x', 1600 * 0.78);
+    rText.setAttribute('y', 900 * 0.32);
+    rText.setAttribute('text-anchor', 'middle');
+    rText.setAttribute('fill', '#f5efe4');
+    rText.setAttribute('font-family', 'Fraunces');
+    rText.setAttribute('font-weight', '200');
+    rText.setAttribute('font-style', 'italic');
+    rText.setAttribute('font-size', '180');
+    rText.setAttribute('opacity', '0');
+    rText.textContent = 'r';
+    overlay.appendChild(rText);
+
+    const eqText = document.createElementNS(NS, 'text');
+    eqText.setAttribute('x', 1600 * 0.78);
+    eqText.setAttribute('y', 900 * 0.50);
+    eqText.setAttribute('text-anchor', 'middle');
+    eqText.setAttribute('fill', '#d63f1f');
+    eqText.setAttribute('font-family', 'Fraunces');
+    eqText.setAttribute('font-weight', '300');
+    eqText.setAttribute('font-size', '140');
+    eqText.setAttribute('opacity', '0');
+    eqText.setAttribute('filter', 'drop-shadow(0 0 30px #d63f1f)');
+    eqText.textContent = '0.20';
+    overlay.appendChild(eqText);
+
+    // Use CSS animation for the appear + pulse, no conflict with setInterval
+    rText.style.animation = 'fadeIn 1.5s ease forwards';
+    eqText.style.animation = 'fadeInPulse 2s ease forwards, redPulse 2s ease-in-out 2s infinite';
+
+    // Inject keyframes if not already present
+    if (!document.getElementById('extreme-keyframes')) {
+      const style = document.createElement('style');
+      style.id = 'extreme-keyframes';
+      style.textContent = `
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 0.7; }
+        }
+        @keyframes fadeInPulse {
+          0% { opacity: 0; }
+          100% { opacity: 1; }
+        }
+        @keyframes redPulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.65; }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    // Add a small label below
+    const subLbl = document.createElementNS(NS, 'text');
+    subLbl.setAttribute('x', 1600 * 0.78);
+    subLbl.setAttribute('y', 900 * 0.62);
+    subLbl.setAttribute('text-anchor', 'middle');
+    subLbl.setAttribute('fill', '#6a6258');
+    subLbl.setAttribute('font-family', 'JetBrains Mono');
+    subLbl.setAttribute('font-size', '14');
+    subLbl.setAttribute('letter-spacing', '0.3em');
+    subLbl.setAttribute('opacity', '0');
+    subLbl.textContent = '< 150 mg/dL · n=31';
+    overlay.appendChild(subLbl);
+    subLbl.style.animation = 'fadeIn 2s ease 1s forwards';
+
+    // Italic caption underneath the chart — the heaviest plant
+    const captionA = document.createElementNS(NS, 'text');
+    captionA.setAttribute('x', 1600 * 0.5);
+    captionA.setAttribute('y', 900 * 0.88);
+    captionA.setAttribute('text-anchor', 'middle');
+    captionA.setAttribute('fill', '#f5efe4');
+    captionA.setAttribute('font-family', 'Fraunces');
+    captionA.setAttribute('font-style', 'italic');
+    captionA.setAttribute('font-weight', '300');
+    captionA.setAttribute('font-size', '26');
+    captionA.setAttribute('letter-spacing', '0.2em');
+    captionA.setAttribute('opacity', '0');
+    captionA.textContent = 'every red dot — was one patient.';
+    overlay.appendChild(captionA);
+    captionA.style.animation = 'fadeInPulse 2.5s ease 2s forwards';
+
+    const caption = document.createElementNS(NS, 'text');
+    caption.setAttribute('x', 1600 * 0.5);
+    caption.setAttribute('y', 900 * 0.95);
+    caption.setAttribute('text-anchor', 'middle');
+    caption.setAttribute('fill', '#d63f1f');
+    caption.setAttribute('font-family', 'Fraunces');
+    caption.setAttribute('font-style', 'italic');
+    caption.setAttribute('font-weight', '300');
+    caption.setAttribute('font-size', '32');
+    caption.setAttribute('letter-spacing', '0.1em');
+    caption.setAttribute('opacity', '0');
+    caption.textContent = 'where it mattered most.';
+    overlay.appendChild(caption);
+    caption.style.animation = 'fadeInPulse 2.5s ease 4s forwards';
+
+    // After captions, mark ~25% as deceased — these were the most critical
+    setTimeout(() => {
+      const fraction = 0.26;
+      const N = points.length;
+      const numDeceased = Math.floor(N * fraction);
+      let marked = 0;
+      while (marked < numDeceased) {
+        const idx = Math.floor(Math.random() * N);
+        if (!points[idx].deceased) {
+          points[idx].deceased = true;
+          marked++;
+        }
+      }
+    }, 6500);
+  }, 3500);
+
+  requestAnimationFrame(frame);
+}
+
+// ============================================================
+// SCENE IX — G(MA) HYPERBOLA — "linear in, hyperbolic out"
+// G = 5000 * MA / (100 - MA)
+// A glowing dot walks along the curve. Two readouts update.
+// At low MA: small G changes. At high MA: explosive G changes.
+// ============================================================
+function sceneHyperbola() {
+  const svg = document.getElementById('svg-hyperbola');
+  svg.innerHTML = '';
+  const NS = 'http://www.w3.org/2000/svg';
+
+  const W = 1600, H = 900;
+  const margin = { top: 130, right: 280, bottom: 200, left: 200 };
+  const innerW = W - margin.left - margin.right;
+  const innerH = H - margin.top - margin.bottom;
+
+  const maxMA = 92; // visual cap
+  const maxG = 5000 * maxMA / (100 - maxMA); // ~57500
+
+  function gFromMA(ma) {
+    return 5000 * ma / (100 - ma);
+  }
+
+  function dx(ma) { return margin.left + (ma / maxMA) * innerW; }
+  function dy(g) { return margin.top + innerH - (g / maxG) * innerH * 0.92; }
+
+  // Defs for curve glow
+  const defs = document.createElementNS(NS, 'defs');
+  const grad = document.createElementNS(NS, 'linearGradient');
+  grad.setAttribute('id', 'curveGrad');
+  grad.setAttribute('x1', '0'); grad.setAttribute('y1', '1');
+  grad.setAttribute('x2', '1'); grad.setAttribute('y2', '0');
+  grad.innerHTML = `
+    <stop offset="0%" stop-color="#6ba0b4" stop-opacity="0.8"/>
+    <stop offset="60%" stop-color="#e2b665" stop-opacity="0.95"/>
+    <stop offset="100%" stop-color="#d63f1f" stop-opacity="1"/>
+  `;
+  defs.appendChild(grad);
+  svg.appendChild(defs);
+
+  // Axes
+  const xAxis = document.createElementNS(NS, 'line');
+  xAxis.setAttribute('x1', margin.left);
+  xAxis.setAttribute('x2', margin.left + innerW);
+  xAxis.setAttribute('y1', margin.top + innerH);
+  xAxis.setAttribute('y2', margin.top + innerH);
+  xAxis.setAttribute('stroke', '#2a2620');
+  xAxis.setAttribute('stroke-width', 1);
+  xAxis.setAttribute('opacity', 0);
+  svg.appendChild(xAxis);
+  xAxis.style.transition = 'opacity 1s ease';
+  setTimeout(() => xAxis.setAttribute('opacity', '1'), 50);
+
+  const yAxis = document.createElementNS(NS, 'line');
+  yAxis.setAttribute('x1', margin.left);
+  yAxis.setAttribute('x2', margin.left);
+  yAxis.setAttribute('y1', margin.top);
+  yAxis.setAttribute('y2', margin.top + innerH);
+  yAxis.setAttribute('stroke', '#2a2620');
+  yAxis.setAttribute('stroke-width', 1);
+  yAxis.setAttribute('opacity', 0);
+  svg.appendChild(yAxis);
+  yAxis.style.transition = 'opacity 1s ease 0.2s';
+  setTimeout(() => yAxis.setAttribute('opacity', '1'), 50);
+
+  // X axis labels
+  [20, 40, 60, 80].forEach(ma => {
+    const tk = document.createElementNS(NS, 'text');
+    tk.setAttribute('x', dx(ma));
+    tk.setAttribute('y', margin.top + innerH + 25);
+    tk.setAttribute('text-anchor', 'middle');
+    tk.setAttribute('fill', '#6a6258');
+    tk.setAttribute('font-family', 'JetBrains Mono');
+    tk.setAttribute('font-size', '12');
+    tk.setAttribute('opacity', 0);
+    tk.textContent = ma;
+    svg.appendChild(tk);
+    tk.style.transition = 'opacity 1s ease 0.5s';
+    setTimeout(() => tk.setAttribute('opacity', '0.6'), 50);
+  });
+
+  const xLbl = document.createElementNS(NS, 'text');
+  xLbl.setAttribute('x', margin.left + innerW / 2);
+  xLbl.setAttribute('y', margin.top + innerH + 60);
+  xLbl.setAttribute('text-anchor', 'middle');
+  xLbl.setAttribute('fill', '#6a6258');
+  xLbl.setAttribute('font-family', 'JetBrains Mono');
+  xLbl.setAttribute('font-size', '13');
+  xLbl.setAttribute('letter-spacing', '0.4em');
+  xLbl.setAttribute('opacity', 0);
+  xLbl.textContent = 'MA  (mm) · WHAT TEG MEASURES';
+  svg.appendChild(xLbl);
+  xLbl.style.transition = 'opacity 1s ease 0.7s';
+  setTimeout(() => xLbl.setAttribute('opacity', '0.8'), 50);
+
+  const yLbl = document.createElementNS(NS, 'text');
+  yLbl.setAttribute('x', margin.left - 60);
+  yLbl.setAttribute('y', margin.top + innerH / 2);
+  yLbl.setAttribute('text-anchor', 'middle');
+  yLbl.setAttribute('fill', '#6a6258');
+  yLbl.setAttribute('font-family', 'JetBrains Mono');
+  yLbl.setAttribute('font-size', '13');
+  yLbl.setAttribute('letter-spacing', '0.3em');
+  yLbl.setAttribute('opacity', 0);
+  yLbl.setAttribute('transform', `rotate(-90, ${margin.left - 60}, ${margin.top + innerH / 2})`);
+  yLbl.textContent = 'G  (dyn/cm²) · ACTUAL CLOT STRENGTH';
+  svg.appendChild(yLbl);
+  yLbl.style.transition = 'opacity 1s ease 0.7s';
+  setTimeout(() => yLbl.setAttribute('opacity', '0.8'), 50);
+
+  // Build curve points
+  const numPts = 200;
+  const cPts = [];
+  for (let i = 0; i <= numPts; i++) {
+    const ma = (i / numPts) * maxMA;
+    const g = gFromMA(ma);
+    cPts.push({ ma, g, px: dx(ma), py: dy(g) });
+  }
+
+  const curvePath = cPts.map((p, i) => (i === 0 ? 'M' : 'L') + p.px + ',' + p.py).join(' ');
+  const curve = document.createElementNS(NS, 'path');
+  curve.setAttribute('d', curvePath);
+  curve.setAttribute('stroke', 'url(#curveGrad)');
+  curve.setAttribute('stroke-width', 3);
+  curve.setAttribute('fill', 'none');
+  curve.setAttribute('filter', 'drop-shadow(0 0 8px rgba(226,182,101,0.4))');
+  svg.appendChild(curve);
+
+  const length = curve.getTotalLength();
+  curve.style.strokeDasharray = length;
+  curve.style.strokeDashoffset = length;
+  curve.style.transition = 'stroke-dashoffset 3s cubic-bezier(0.4, 0, 0.2, 1) 1s';
+  setTimeout(() => curve.style.strokeDashoffset = '0', 50);
+
+  // After curve completes, glowing traveler dot walks the curve
+  setTimeout(() => {
+    // Traveler dot
+    const traveler = document.createElementNS(NS, 'circle');
+    traveler.setAttribute('r', 8);
+    traveler.setAttribute('fill', '#f5efe4');
+    traveler.setAttribute('cx', cPts[0].px);
+    traveler.setAttribute('cy', cPts[0].py);
+    traveler.setAttribute('filter', 'drop-shadow(0 0 16px #ffffff)');
+    svg.appendChild(traveler);
+
+    // Readout group (top right)
+    const readoutX = margin.left + innerW + 30;
+
+    const lblMA = document.createElementNS(NS, 'text');
+    lblMA.setAttribute('x', readoutX);
+    lblMA.setAttribute('y', margin.top + 30);
+    lblMA.setAttribute('fill', '#6a6258');
+    lblMA.setAttribute('font-family', 'JetBrains Mono');
+    lblMA.setAttribute('font-size', '12');
+    lblMA.setAttribute('letter-spacing', '0.3em');
+    lblMA.setAttribute('opacity', '0.7');
+    lblMA.textContent = 'MA';
+    svg.appendChild(lblMA);
+
+    const valMA = document.createElementNS(NS, 'text');
+    valMA.setAttribute('x', readoutX);
+    valMA.setAttribute('y', margin.top + 80);
+    valMA.setAttribute('fill', '#f5efe4');
+    valMA.setAttribute('font-family', 'Fraunces');
+    valMA.setAttribute('font-weight', '200');
+    valMA.setAttribute('font-size', '54');
+    valMA.textContent = '0';
+    svg.appendChild(valMA);
+
+    const lblG = document.createElementNS(NS, 'text');
+    lblG.setAttribute('x', readoutX);
+    lblG.setAttribute('y', margin.top + 160);
+    lblG.setAttribute('fill', '#6a6258');
+    lblG.setAttribute('font-family', 'JetBrains Mono');
+    lblG.setAttribute('font-size', '12');
+    lblG.setAttribute('letter-spacing', '0.3em');
+    lblG.setAttribute('opacity', '0.7');
+    lblG.textContent = 'G';
+    svg.appendChild(lblG);
+
+    const valG = document.createElementNS(NS, 'text');
+    valG.setAttribute('x', readoutX);
+    valG.setAttribute('y', margin.top + 230);
+    valG.setAttribute('fill', '#e2b665');
+    valG.setAttribute('font-family', 'Fraunces');
+    valG.setAttribute('font-weight', '200');
+    valG.setAttribute('font-size', '54');
+    valG.textContent = '0';
+    svg.appendChild(valG);
+
+    // Animate the traveler — non-linear pause structure for emphasis
+    const t0 = performance.now();
+    const totalDuration = 7000;
+
+    // Waypoints to dwell at (key MA values)
+    const stops = [
+      { ma: 50, label: 'normal-low' },
+      { ma: 70, label: 'normal' },
+      { ma: 85, label: 'high' },
+      { ma: 90, label: 'extreme' }
+    ];
+    let stopIdx = 0;
+    let accumulatedHighlights = [];
+
+    function animate(now) {
+      const t = (now - t0) / totalDuration;
+      if (t >= 1) {
+        // Final state: at high MA, show ratio explosion
+        return;
+      }
+
+      // Non-linear progression: spend more time at high MA region
+      const nonLinearT = t < 0.35 ? t * 1.4 : 0.49 + (t - 0.35) * 0.785;
+      const ma = nonLinearT * maxMA;
+      const g = gFromMA(ma);
+      const px = dx(ma);
+      const py = dy(g);
+
+      traveler.setAttribute('cx', px);
+      traveler.setAttribute('cy', py);
+
+      // Update font size of G value based on magnitude — larger G = larger text (visual amplification)
+      const gFontSize = 36 + (g / maxG) * 80; // 36 → 116 px
+      const maFontSize = 36 + (ma / maxMA) * 30; // modest growth: 36 → 66
+
+      valMA.setAttribute('font-size', maFontSize);
+      valG.setAttribute('font-size', gFontSize);
+      valMA.textContent = Math.round(ma);
+      valG.textContent = Math.round(g).toLocaleString();
+
+      // G color shifts from gold → red as it explodes
+      const t2 = ma / maxMA;
+      if (t2 > 0.7) {
+        valG.setAttribute('fill', '#d63f1f');
+        valG.setAttribute('filter', 'drop-shadow(0 0 12px #d63f1f)');
+      } else if (t2 > 0.5) {
+        valG.setAttribute('fill', '#e2b665');
+        valG.setAttribute('filter', 'drop-shadow(0 0 8px #e2b665)');
+      }
+
+      // At each waypoint, drop a "ghost" marker with that MA→G ratio
+      while (stopIdx < stops.length && ma >= stops[stopIdx].ma) {
+        const stop = stops[stopIdx];
+        const sg = gFromMA(stop.ma);
+        const sx = dx(stop.ma);
+        const sy = dy(sg);
+
+        // Vertical marker line
+        const ghostLine = document.createElementNS(NS, 'line');
+        ghostLine.setAttribute('x1', sx);
+        ghostLine.setAttribute('x2', sx);
+        ghostLine.setAttribute('y1', sy);
+        ghostLine.setAttribute('y2', margin.top + innerH);
+        ghostLine.setAttribute('stroke', stopIdx >= 2 ? '#d63f1f' : '#6a6258');
+        ghostLine.setAttribute('stroke-width', 0.7);
+        ghostLine.setAttribute('stroke-dasharray', '2 4');
+        ghostLine.setAttribute('opacity', 0);
+        svg.appendChild(ghostLine);
+        ghostLine.style.transition = 'opacity 0.8s ease';
+        setTimeout(() => ghostLine.setAttribute('opacity', stopIdx >= 2 ? '0.7' : '0.4'), 50);
+
+        // Horizontal marker
+        const ghostHLine = document.createElementNS(NS, 'line');
+        ghostHLine.setAttribute('x1', margin.left);
+        ghostHLine.setAttribute('x2', sx);
+        ghostHLine.setAttribute('y1', sy);
+        ghostHLine.setAttribute('y2', sy);
+        ghostHLine.setAttribute('stroke', stopIdx >= 2 ? '#d63f1f' : '#6a6258');
+        ghostHLine.setAttribute('stroke-width', 0.7);
+        ghostHLine.setAttribute('stroke-dasharray', '2 4');
+        ghostHLine.setAttribute('opacity', 0);
+        svg.appendChild(ghostHLine);
+        ghostHLine.style.transition = 'opacity 0.8s ease';
+        setTimeout(() => ghostHLine.setAttribute('opacity', stopIdx >= 2 ? '0.7' : '0.4'), 50);
+
+        // Marker dot
+        const ghostDot = document.createElementNS(NS, 'circle');
+        ghostDot.setAttribute('cx', sx);
+        ghostDot.setAttribute('cy', sy);
+        ghostDot.setAttribute('r', 0);
+        ghostDot.setAttribute('fill', stopIdx >= 2 ? '#d63f1f' : '#e2b665');
+        svg.appendChild(ghostDot);
+        ghostDot.style.transition = 'r 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        setTimeout(() => ghostDot.setAttribute('r', '4'), 50);
+
+        accumulatedHighlights.push({ ma: stop.ma, g: sg });
+        stopIdx++;
+      }
+
+      requestAnimationFrame(animate);
+    }
+    requestAnimationFrame(animate);
+
+    // Show the whisper after animation
+    setTimeout(() => {
+      document.getElementById('whisper-9').classList.add('show');
+
+      // Add a final emphasis annotation at high MA region
+      const annotG = document.createElementNS(NS, 'text');
+      annotG.setAttribute('x', dx(85));
+      annotG.setAttribute('y', dy(gFromMA(85)) - 30);
+      annotG.setAttribute('text-anchor', 'middle');
+      annotG.setAttribute('fill', '#d63f1f');
+      annotG.setAttribute('font-family', 'Fraunces');
+      annotG.setAttribute('font-style', 'italic');
+      annotG.setAttribute('font-weight', '300');
+      annotG.setAttribute('font-size', '20');
+      annotG.setAttribute('opacity', 0);
+      annotG.textContent = 'Δ MA = 5  →  Δ G ≈ ×4';
+      svg.appendChild(annotG);
+      annotG.style.transition = 'opacity 2s ease';
+      setTimeout(() => annotG.setAttribute('opacity', '0.85'), 50);
+    }, 7500);
+  }, 4200);
+}
+
+// ============================================================
+// SCENE X — TWO CRYSTALS
+// ============================================================
+function sceneCrystals() {
+  const svg = document.getElementById('svg-crystals');
+  svg.innerHTML = '';
+  const NS = 'http://www.w3.org/2000/svg';
+
+  const W = 1600, H = 900;
+
+  function buildCrystal(centerX, centerY, density, isHigh, color) {
+    const radius = 220;
+
+    const cup = document.createElementNS(NS, 'circle');
+    cup.setAttribute('cx', centerX);
+    cup.setAttribute('cy', centerY);
+    cup.setAttribute('r', radius);
+    cup.setAttribute('fill', 'none');
+    cup.setAttribute('stroke', '#2a2620');
+    cup.setAttribute('stroke-width', 1);
+    cup.setAttribute('opacity', 0);
+    svg.appendChild(cup);
+    cup.style.transition = 'opacity 1.5s ease';
+    setTimeout(() => cup.setAttribute('opacity', '1'), 50);
+
+    const pin = document.createElementNS(NS, 'circle');
+    pin.setAttribute('cx', centerX);
+    pin.setAttribute('cy', centerY);
+    pin.setAttribute('r', 12);
+    pin.setAttribute('fill', '#f5efe4');
+    pin.setAttribute('opacity', 0);
+    svg.appendChild(pin);
+    pin.style.transition = 'opacity 1.5s ease 0.5s';
+    setTimeout(() => pin.setAttribute('opacity', '0.85'), 50);
+
+    for (let i = 0; i < density; i++) {
+      const angle = rand(0, Math.PI * 2);
+      const wallR = radius - rand(0, 5);
+      const wallX = centerX + Math.cos(angle) * wallR;
+      const wallY = centerY + Math.sin(angle) * wallR;
+
+      const pinR = 12 + rand(0, 3);
+      const pinAngle = angle + rand(-0.3, 0.3);
+      const pinX = centerX + Math.cos(pinAngle) * pinR;
+      const pinY = centerY + Math.sin(pinAngle) * pinR;
+
+      let endX = pinX, endY = pinY;
+      let opacity = 0.75;
+      let broken = false;
+      if (!isHigh && Math.random() < 0.45) {
+        const t = rand(0.25, 0.6);
+        endX = lerp(wallX, pinX, t);
+        endY = lerp(wallY, pinY, t);
+        opacity = 0.4;
+        broken = true;
+      }
+
+      const midX = lerp(wallX, endX, 0.5);
+      const midY = lerp(wallY, endY, 0.5);
+      const perpAngle = Math.atan2(endY - wallY, endX - wallX) + Math.PI / 2;
+      const curveAmt = rand(-15, 15);
+      const ctrlX = midX + Math.cos(perpAngle) * curveAmt;
+      const ctrlY = midY + Math.sin(perpAngle) * curveAmt;
+
+      const path = document.createElementNS(NS, 'path');
+      path.setAttribute('d', `M ${wallX} ${wallY} Q ${ctrlX} ${ctrlY} ${endX} ${endY}`);
+      path.setAttribute('stroke', color);
+      path.setAttribute('stroke-width', isHigh ? 0.7 : 0.6);
+      path.setAttribute('fill', 'none');
+      path.setAttribute('opacity', 0);
+      svg.appendChild(path);
+
+      const length = Math.hypot(endX - wallX, endY - wallY);
+      path.style.strokeDasharray = length;
+      path.style.strokeDashoffset = length;
+      path.style.transition = `stroke-dashoffset 1.2s ease ${1 + i * 0.025}s, opacity 0.6s ease ${1 + i * 0.025}s`;
+
+      setTimeout(() => {
+        path.setAttribute('opacity', opacity);
+        path.style.strokeDashoffset = '0';
+      }, 50);
+
+      if (broken) {
+        const snap = document.createElementNS(NS, 'circle');
+        snap.setAttribute('cx', endX);
+        snap.setAttribute('cy', endY);
+        snap.setAttribute('r', 0);
+        snap.setAttribute('fill', '#ff5a36');
+        svg.appendChild(snap);
+        snap.style.transition = `r 0.4s ease ${1.5 + i * 0.025}s`;
+        setTimeout(() => snap.setAttribute('r', 1.2), 50);
+      }
+    }
+
+    const nPlatelets = isHigh ? 5 : 16;
+    for (let i = 0; i < nPlatelets; i++) {
+      const angle = rand(0, Math.PI * 2);
+      const r = rand(30, radius - 15);
+      const px = centerX + Math.cos(angle) * r;
+      const py = centerY + Math.sin(angle) * r;
+
+      const plate = document.createElementNS(NS, 'circle');
+      plate.setAttribute('cx', px);
+      plate.setAttribute('cy', py);
+      plate.setAttribute('r', 0);
+      plate.setAttribute('fill', '#d63f1f');
+      plate.setAttribute('opacity', isHigh ? 0.3 : 0.7);
+      svg.appendChild(plate);
+
+      plate.style.transition = `r 0.6s ease ${1.5 + i * 0.08}s`;
+      setTimeout(() => {
+        plate.setAttribute('r', isHigh ? 1.8 : 2.5);
+      }, 50);
+    }
+  }
+
+  buildCrystal(W * 0.3, H * 0.5, 70, true, '#6ba0b4');
+  buildCrystal(W * 0.7, H * 0.5, 22, false, '#d63f1f');
+
+  setTimeout(() => {
+    const labels = [
+      { x: W * 0.3, y: H * 0.85, txt: '350', sub: 'mg · dL⁻¹', color: '#6ba0b4' },
+      { x: W * 0.7, y: H * 0.85, txt: '< 150', sub: 'mg · dL⁻¹', color: '#d63f1f' }
+    ];
+    labels.forEach((l, i) => {
+      const num = document.createElementNS(NS, 'text');
+      num.setAttribute('x', l.x);
+      num.setAttribute('y', l.y);
+      num.setAttribute('text-anchor', 'middle');
+      num.setAttribute('fill', l.color);
+      num.setAttribute('font-family', 'Fraunces');
+      num.setAttribute('font-weight', '200');
+      num.setAttribute('font-size', '64');
+      num.setAttribute('opacity', 0);
+      num.textContent = l.txt;
+      svg.appendChild(num);
+      num.style.transition = `opacity 1.5s ease ${3 + i * 0.5}s`;
+      setTimeout(() => num.setAttribute('opacity', '0.9'), 50);
+
+      const sub = document.createElementNS(NS, 'text');
+      sub.setAttribute('x', l.x);
+      sub.setAttribute('y', l.y + 35);
+      sub.setAttribute('text-anchor', 'middle');
+      sub.setAttribute('fill', '#6a6258');
+      sub.setAttribute('font-family', 'JetBrains Mono');
+      sub.setAttribute('font-weight', '300');
+      sub.setAttribute('font-size', '14');
+      sub.setAttribute('letter-spacing', '0.3em');
+      sub.setAttribute('opacity', 0);
+      sub.textContent = l.sub;
+      svg.appendChild(sub);
+      sub.style.transition = `opacity 1.5s ease ${3.3 + i * 0.5}s`;
+      setTimeout(() => sub.setAttribute('opacity', '0.6'), 50);
+    });
+  }, 100);
+}
+
+// ============================================================
+// SCENE XI — FINAL DISPERSAL
+// ============================================================
+function sceneFinal() {
+  const canvas = document.getElementById('cv-final');
+  const { ctx, w, h } = setupCanvas(canvas);
+
+  const elems = [];
+  for (let i = 0; i < 80; i++) {
+    elems.push({
+      x: rand(0, w), y: rand(0, h),
+      vx: rand(-0.3, 0.3), vy: rand(-0.4, -0.1),
+      r: rand(1, 3),
+      color: ['#d63f1f', '#e2b665', '#6ba0b4'][Math.floor(rand(0, 3))],
+      a: rand(0.2, 0.7),
+      life: rand(8000, 15000),
+      born: performance.now() + rand(0, 3000)
+    });
+  }
+
+  function frame(now) {
+    // Clear fully each frame to prevent alpha accumulation in canvas buffer
+    ctx.clearRect(0, 0, w, h);
+
+    elems.forEach(e => {
+      if (now < e.born) return;
+      const age = now - e.born;
+      if (age > e.life) {
+        e.x = rand(0, w); e.y = h + 20;
+        e.vx = rand(-0.3, 0.3); e.vy = rand(-0.4, -0.1);
+        e.born = now;
+        return;
+      }
+
+      const lifeT = age / e.life;
+      const fadeIn = Math.min(1, age / 1000);
+      const fadeOut = Math.max(0, 1 - (lifeT - 0.7) / 0.3);
+      const a = e.a * fadeIn * fadeOut;
+
+      e.x += e.vx; e.y += e.vy;
+
+      ctx.beginPath();
+      ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2);
+      ctx.fillStyle = e.color;
+      ctx.shadowColor = e.color;
+      ctx.shadowBlur = 6;
+      ctx.globalAlpha = a;
+      ctx.fill();
+    });
+    ctx.shadowBlur = 0;
+    ctx.globalAlpha = 1;
+
+    requestAnimationFrame(frame);
+  }
+  frame(performance.now());
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.getElementById('stage-1').classList.add('active');
+const ch1 = document.querySelector('#stage-1 .chapter');
+if (ch1) setTimeout(() => ch1.classList.add('show'), 800);
+updateProgress(0);
+</script>
+
+</body>
+</html>
