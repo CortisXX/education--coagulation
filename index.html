@@ -10,18 +10,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;0,9..144,800;1,9..144,200;1,9..144,300&family=JetBrains+Mono:wght@200;300;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #07060a;
-    --bg2: #0a0810;
-    --ink: #f5efe4;
-    --ink-dim: #6a6258;
-    --ink-faint: #2a2620;
-    --blood: #d63f1f;
-    --blood-glow: #ff5a36;
+    --bg: #faf7f2;
+    --bg2: #f3eee5;
+    --ink: #1a1612;
+    --ink-dim: #6e655a;
+    --ink-faint: #c8bfb1;
+    --blood: #b22817;
+    --blood-glow: #c73219;
     --blood-deep: #6e1d0a;
-    --plasma: #e2b665;
-    --serum: #6ba0b4;
-    --serum-deep: #2d5a6b;
-    --void: #050306;
+    --plasma: #b8841f;
+    --plasma-deep: #8a5f10;
+    --serum: #2c6378;
+    --serum-deep: #1a4452;
+    --void: #ffffff;
+    --grain-mix: #8a8378;
   }
 
 - { box-sizing: border-box; margin: 0; padding: 0; }
@@ -44,8 +46,8 @@ inset: 0;
 pointer-events: none;
 z-index: 1;
 background:
-radial-gradient(ellipse at 20% 30%, rgba(214,63,31,0.06) 0%, transparent 45%),
-radial-gradient(ellipse at 80% 70%, rgba(107,160,180,0.04) 0%, transparent 50%);
+radial-gradient(ellipse at 20% 30%, rgba(178, 40, 23, 0.04) 0%, transparent 50%),
+radial-gradient(ellipse at 80% 70%, rgba(44, 99, 120, 0.03) 0%, transparent 55%);
 }
 
 .grain {
@@ -53,9 +55,9 @@ position: fixed;
 inset: 0;
 pointer-events: none;
 z-index: 2;
-opacity: 0.5;
-mix-blend-mode: overlay;
-background-image: url(“data:image/svg+xml,%3Csvg viewBox=‘0 0 400 400’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cfilter id=‘n’%3E%3CfeTurbulence type=‘fractalNoise’ baseFrequency=‘0.9’ numOctaves=‘3’/%3E%3CfeColorMatrix values=‘0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.06 0’/%3E%3C/filter%3E%3Crect width=‘100%25’ height=‘100%25’ filter=‘url(%23n)’/%3E%3C/svg%3E”);
+opacity: 0.35;
+mix-blend-mode: multiply;
+background-image: url(“data:image/svg+xml,%3Csvg viewBox=‘0 0 400 400’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cfilter id=‘n’%3E%3CfeTurbulence type=‘fractalNoise’ baseFrequency=‘0.9’ numOctaves=‘3’/%3E%3CfeColorMatrix values=‘0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.08 0’/%3E%3C/filter%3E%3Crect width=‘100%25’ height=‘100%25’ filter=‘url(%23n)’/%3E%3C/svg%3E”);
 }
 
 .stage {
@@ -103,7 +105,7 @@ z-index: 10;
 font-family: ‘JetBrains Mono’, monospace;
 font-size: 0.65rem;
 letter-spacing: 0.4em;
-color: var(–ink-faint);
+color: var(–ink-dim);
 opacity: 0;
 transition: opacity 1.5s ease;
 }
@@ -133,14 +135,13 @@ transition: background 0.4s ease, width 0.4s ease;
 
 /* Scene 1 */
 #stage-1 .void-dot {
-width: 12px;
-height: 12px;
+width: 14px;
+height: 14px;
 border-radius: 50%;
 background: var(–blood);
 box-shadow:
-0 0 30px var(–blood-glow),
-0 0 60px var(–blood),
-0 0 120px var(–blood-deep);
+0 0 20px rgba(178, 40, 23, 0.55),
+0 0 50px rgba(178, 40, 23, 0.25);
 animation: heartbeat 1.4s cubic-bezier(0.6, 0, 0.4, 1) infinite;
 position: relative;
 }
@@ -176,7 +177,7 @@ font-size: clamp(8rem, 22vw, 20rem);
 color: var(–plasma);
 letter-spacing: -0.05em;
 line-height: 1;
-text-shadow: 0 0 80px rgba(226,182,101,0.25);
+text-shadow: 0 0 20px rgba(184, 132, 31, 0.18);
 opacity: 0;
 transform: scale(0.92);
 transition: all 2s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -204,7 +205,7 @@ margin-top: 2rem;
 opacity: 0;
 transform: rotate(-8deg) scale(0.5);
 transition: all 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) 2s;
-text-shadow: 0 0 40px rgba(214,63,31,0.4);
+text-shadow: 0 0 24px rgba(178, 40, 23, 0.25);
 }
 #stage-six.active .qmark { opacity: 1; transform: rotate(-8deg) scale(1); }
 
@@ -244,13 +245,13 @@ transform: translateX(-50%);
 font-family: ‘JetBrains Mono’, monospace;
 font-size: 0.6rem;
 letter-spacing: 0.4em;
-color: var(–ink-faint);
+color: var(–ink-dim);
 z-index: 50;
 animation: hintFade 3s ease-in-out infinite;
 }
 @keyframes hintFade {
-0%, 100% { opacity: 0.3; }
-50% { opacity: 0.8; }
+0%, 100% { opacity: 0.4; }
+50% { opacity: 0.9; }
 }
 .scroll-hint.hidden { display: none; }
 </style>
@@ -474,7 +475,7 @@ function sceneThrombin() {
   redGrad.setAttribute('x1', '0'); redGrad.setAttribute('y1', '0');
   redGrad.setAttribute('x2', '0'); redGrad.setAttribute('y2', '1');
   redGrad.innerHTML = `
-    <stop offset="0%" stop-color="#d63f1f" stop-opacity="0.9"/>
+    <stop offset="0%" stop-color="#b22817" stop-opacity="0.9"/>
     <stop offset="100%" stop-color="#6e1d0a" stop-opacity="0.6"/>
   `;
   defs.appendChild(redGrad);
@@ -484,7 +485,7 @@ function sceneThrombin() {
   blueGrad.setAttribute('x1', '0'); blueGrad.setAttribute('y1', '0');
   blueGrad.setAttribute('x2', '0'); blueGrad.setAttribute('y2', '1');
   blueGrad.innerHTML = `
-    <stop offset="0%" stop-color="#6ba0b4" stop-opacity="0.55"/>
+    <stop offset="0%" stop-color="#2c6378" stop-opacity="0.55"/>
     <stop offset="100%" stop-color="#2d5a6b" stop-opacity="0.25"/>
   `;
   defs.appendChild(blueGrad);
@@ -522,7 +523,7 @@ function sceneThrombin() {
   axis.setAttribute('x2', margin.left + innerW);
   axis.setAttribute('y1', baseY);
   axis.setAttribute('y2', baseY);
-  axis.setAttribute('stroke', '#2a2620');
+  axis.setAttribute('stroke', '#c8bfb1');
   axis.setAttribute('stroke-width', 1);
   axis.setAttribute('opacity', 0);
   svg.appendChild(axis);
@@ -534,7 +535,7 @@ function sceneThrombin() {
   yLabel.setAttribute('x', margin.left - 30);
   yLabel.setAttribute('y', margin.top + innerH * 0.5);
   yLabel.setAttribute('text-anchor', 'end');
-  yLabel.setAttribute('fill', '#6a6258');
+  yLabel.setAttribute('fill', '#6e655a');
   yLabel.setAttribute('font-family', 'JetBrains Mono');
   yLabel.setAttribute('font-size', '13');
   yLabel.setAttribute('letter-spacing', '0.2em');
@@ -549,7 +550,7 @@ function sceneThrombin() {
   xLabel.setAttribute('x', margin.left + innerW / 2);
   xLabel.setAttribute('y', baseY + 35);
   xLabel.setAttribute('text-anchor', 'middle');
-  xLabel.setAttribute('fill', '#6a6258');
+  xLabel.setAttribute('fill', '#6e655a');
   xLabel.setAttribute('font-family', 'JetBrains Mono');
   xLabel.setAttribute('font-size', '13');
   xLabel.setAttribute('letter-spacing', '0.4em');
@@ -565,10 +566,10 @@ function sceneThrombin() {
   // Curve path (drawing animation)
   const curve = document.createElementNS(NS, 'path');
   curve.setAttribute('d', pathD);
-  curve.setAttribute('stroke', '#f5efe4');
+  curve.setAttribute('stroke', '#1a1612');
   curve.setAttribute('stroke-width', 2);
   curve.setAttribute('fill', 'none');
-  curve.setAttribute('filter', 'drop-shadow(0 0 6px rgba(245,239,228,0.3))');
+  curve.setAttribute('filter', 'drop-shadow(0 0 2px rgba(26, 22, 18,0.3))');
   svg.appendChild(curve);
 
   const length = curve.getTotalLength();
@@ -630,7 +631,7 @@ function sceneThrombin() {
     splitLine.setAttribute('x2', points[split5pct].px);
     splitLine.setAttribute('y1', baseY);
     splitLine.setAttribute('y2', points[split5pct].py);
-    splitLine.setAttribute('stroke', '#f5efe4');
+    splitLine.setAttribute('stroke', '#1a1612');
     splitLine.setAttribute('stroke-width', 0.7);
     splitLine.setAttribute('stroke-dasharray', '3 4');
     splitLine.setAttribute('opacity', 0);
@@ -644,12 +645,12 @@ function sceneThrombin() {
       num5.setAttribute('x', points[split5pct].px - 30);
       num5.setAttribute('y', baseY - 30);
       num5.setAttribute('text-anchor', 'end');
-      num5.setAttribute('fill', '#d63f1f');
+      num5.setAttribute('fill', '#b22817');
       num5.setAttribute('font-family', 'Fraunces');
       num5.setAttribute('font-weight', '300');
       num5.setAttribute('font-size', '52');
       num5.setAttribute('opacity', 0);
-      num5.setAttribute('filter', 'drop-shadow(0 0 12px rgba(214,63,31,0.4))');
+      num5.setAttribute('filter', 'drop-shadow(0 0 1px rgba(178, 40, 23,0.4))');
       num5.textContent = '5%';
       svg.appendChild(num5);
       num5.style.transition = 'opacity 1.5s ease';
@@ -659,7 +660,7 @@ function sceneThrombin() {
       lbl5.setAttribute('x', points[split5pct].px - 30);
       lbl5.setAttribute('y', baseY - 5);
       lbl5.setAttribute('text-anchor', 'end');
-      lbl5.setAttribute('fill', '#6a6258');
+      lbl5.setAttribute('fill', '#6e655a');
       lbl5.setAttribute('font-family', 'JetBrains Mono');
       lbl5.setAttribute('font-size', '11');
       lbl5.setAttribute('letter-spacing', '0.25em');
@@ -673,12 +674,12 @@ function sceneThrombin() {
       num95.setAttribute('x', margin.left + innerW * 0.55);
       num95.setAttribute('y', margin.top + innerH * 0.45);
       num95.setAttribute('text-anchor', 'middle');
-      num95.setAttribute('fill', '#f5efe4');
+      num95.setAttribute('fill', '#1a1612');
       num95.setAttribute('font-family', 'Fraunces');
       num95.setAttribute('font-weight', '200');
       num95.setAttribute('font-size', '160');
       num95.setAttribute('opacity', 0);
-      num95.setAttribute('filter', 'drop-shadow(0 0 30px rgba(107,160,180,0.4))');
+      num95.setAttribute('filter', 'drop-shadow(0 0 3px rgba(44, 99, 120,0.4))');
       num95.textContent = '95%';
       svg.appendChild(num95);
       num95.style.transition = 'opacity 2s ease';
@@ -688,7 +689,7 @@ function sceneThrombin() {
       lbl95.setAttribute('x', margin.left + innerW * 0.55);
       lbl95.setAttribute('y', margin.top + innerH * 0.45 + 35);
       lbl95.setAttribute('text-anchor', 'middle');
-      lbl95.setAttribute('fill', '#6ba0b4');
+      lbl95.setAttribute('fill', '#2c6378');
       lbl95.setAttribute('font-family', 'JetBrains Mono');
       lbl95.setAttribute('font-size', '14');
       lbl95.setAttribute('letter-spacing', '0.4em');
@@ -735,7 +736,7 @@ function sceneBalance() {
       y: rand(0, h),
       tx: cx - beamHalf + rand(-colW * 0.4, colW * 0.4),
       ty: stackY - 110 - i * 28 + rand(-8, 8),
-      color: '#d63f1f',
+      color: '#b22817',
       size: rand(13, 16),
       delay: i * 120,
       progress: 0,
@@ -749,7 +750,7 @@ function sceneBalance() {
       y: rand(0, h),
       tx: cx + beamHalf + rand(-colW * 0.4, colW * 0.4),
       ty: stackY - 110 - i * 28 + rand(-8, 8),
-      color: '#6ba0b4',
+      color: '#2c6378',
       size: rand(13, 16),
       delay: 600 + i * 120,
       progress: 0,
@@ -764,7 +765,7 @@ function sceneBalance() {
   function frame(now) {
     const t = now - t0;
 
-    ctx.fillStyle = 'rgba(7, 6, 10, 0.18)';
+    ctx.fillStyle = 'rgba(250, 247, 242, 0.20)';
     ctx.fillRect(0, 0, w, h);
 
     parts.forEach(p => {
@@ -784,7 +785,7 @@ function sceneBalance() {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.shadowColor = p.color;
-      ctx.shadowBlur = 12 * p.progress;
+      ctx.shadowBlur = 5 * p.progress;
       ctx.fillStyle = p.color;
       ctx.globalAlpha = p.progress;
       ctx.fillText(p.txt, cx_p, cy_p + wobbleY);
@@ -808,7 +809,7 @@ function sceneBalance() {
       ctx.translate(cx, cy);
       ctx.rotate(angle);
 
-      ctx.strokeStyle = '#f5efe4';
+      ctx.strokeStyle = '#1a1612';
       ctx.lineWidth = 1.5;
       ctx.globalAlpha = 0.7;
       ctx.beginPath();
@@ -823,14 +824,14 @@ function sceneBalance() {
         ctx.moveTo(s * len, 0);
         ctx.lineTo(s * len, 18);
         ctx.stroke();
-        ctx.strokeStyle = s === -1 ? '#d63f1f' : '#6ba0b4';
+        ctx.strokeStyle = s === -1 ? '#b22817' : '#2c6378';
         ctx.beginPath();
         ctx.ellipse(s * len, 22, colW * 0.6, 4, 0, 0, Math.PI * 2);
         ctx.stroke();
-        ctx.strokeStyle = '#f5efe4';
+        ctx.strokeStyle = '#1a1612';
       });
 
-      ctx.fillStyle = '#f5efe4';
+      ctx.fillStyle = '#1a1612';
       ctx.globalAlpha = 0.7;
       ctx.beginPath();
       ctx.arc(0, 0, 3, 0, Math.PI * 2);
@@ -839,7 +840,7 @@ function sceneBalance() {
       ctx.restore();
       ctx.globalAlpha = 1;
 
-      ctx.strokeStyle = '#2a2620';
+      ctx.strokeStyle = '#c8bfb1';
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(cx, cy);
@@ -856,7 +857,7 @@ function sceneBalance() {
       const loopFrame = (n) => {
         const tt = n - t0;
         wobble = Math.sin(tt * 0.001) * 3;
-        ctx.fillStyle = 'rgba(7, 6, 10, 0.5)';
+        ctx.fillStyle = 'rgba(250, 247, 242, 0.50)';
         ctx.fillRect(0, 0, w, h);
         parts.forEach(p => {
           ctx.font = `300 ${p.size}px 'JetBrains Mono', monospace`;
@@ -864,7 +865,7 @@ function sceneBalance() {
           ctx.textBaseline = 'middle';
           const sign = p.side === 'L' ? -1 : 1;
           ctx.shadowColor = p.color;
-          ctx.shadowBlur = 10;
+          ctx.shadowBlur = 4;
           ctx.fillStyle = p.color;
           ctx.fillText(p.txt, p.tx, p.ty + sign * wobble * 0.3);
           ctx.shadowBlur = 0;
@@ -873,7 +874,7 @@ function sceneBalance() {
         ctx.save();
         ctx.translate(cx, cy);
         ctx.rotate(angle);
-        ctx.strokeStyle = '#f5efe4';
+        ctx.strokeStyle = '#1a1612';
         ctx.globalAlpha = 0.5;
         ctx.lineWidth = 1.5;
         ctx.beginPath();
@@ -907,7 +908,7 @@ function sceneRotem() {
   axis.setAttribute('x2', endX);
   axis.setAttribute('y1', baseY);
   axis.setAttribute('y2', baseY);
-  axis.setAttribute('stroke', '#2a2620');
+  axis.setAttribute('stroke', '#c8bfb1');
   axis.setAttribute('stroke-width', 1);
   axis.setAttribute('stroke-dasharray', '2 6');
   svg.appendChild(axis);
@@ -938,16 +939,16 @@ function sceneRotem() {
     dot1.setAttribute('cx', d.x);
     dot1.setAttribute('cy', d.yUp);
     dot1.setAttribute('r', 0);
-    dot1.setAttribute('fill', '#d63f1f');
-    dot1.setAttribute('filter', 'drop-shadow(0 0 4px #ff5a36)');
+    dot1.setAttribute('fill', '#b22817');
+    dot1.setAttribute('filter', 'drop-shadow(0 0 1px #ff5a36)');
     svg.appendChild(dot1);
 
     const dot2 = document.createElementNS(NS, 'circle');
     dot2.setAttribute('cx', d.x);
     dot2.setAttribute('cy', d.yDn);
     dot2.setAttribute('r', 0);
-    dot2.setAttribute('fill', '#d63f1f');
-    dot2.setAttribute('filter', 'drop-shadow(0 0 4px #ff5a36)');
+    dot2.setAttribute('fill', '#b22817');
+    dot2.setAttribute('filter', 'drop-shadow(0 0 1px #ff5a36)');
     dot2.setAttribute('opacity', '0.55');
     svg.appendChild(dot2);
 
@@ -961,10 +962,10 @@ function sceneRotem() {
 
   setTimeout(() => {
     const markers = [
-      { p: 0.18, color: '#e2b665', label: 'CT' },
-      { p: 0.32, color: '#6ba0b4', label: 'α' },
-      { p: 0.6, color: '#f5efe4', label: 'MCF' },
-      { p: 0.88, color: '#d63f1f', label: 'LY' }
+      { p: 0.18, color: '#b8841f', label: 'CT' },
+      { p: 0.32, color: '#2c6378', label: 'α' },
+      { p: 0.6, color: '#1a1612', label: 'MCF' },
+      { p: 0.88, color: '#b22817', label: 'LY' }
     ];
     markers.forEach((m, i) => {
       setTimeout(() => {
@@ -1044,14 +1045,14 @@ function sceneBonnet() {
     dots.push({
       x: rand(0, w), y: rand(0, h),
       tx: leftTargets[i].x, ty: leftTargets[i].y,
-      color: '#6a6258', side: 'L', delay: i * 30
+      color: '#6e655a', side: 'L', delay: i * 30
     });
   }
   for (let i = 0; i < N_RIGHT; i++) {
     dots.push({
       x: rand(0, w), y: rand(0, h),
       tx: rightTargets[i].x, ty: rightTargets[i].y,
-      color: '#d63f1f', side: 'R', delay: 800 + i * 30
+      color: '#b22817', side: 'R', delay: 800 + i * 30
     });
   }
 
@@ -1059,7 +1060,7 @@ function sceneBonnet() {
 
   function frame(now) {
     const t = now - t0;
-    ctx.fillStyle = 'rgba(7, 6, 10, 0.2)';
+    ctx.fillStyle = 'rgba(250, 247, 242, 0.22)';
     ctx.fillRect(0, 0, w, h);
 
     dots.forEach(d => {
@@ -1084,7 +1085,7 @@ function sceneBonnet() {
     else {
       const loop = (n) => {
         const tt = n - t0;
-        ctx.fillStyle = 'rgba(7, 6, 10, 0.3)';
+        ctx.fillStyle = 'rgba(250, 247, 242, 0.30)';
         ctx.fillRect(0, 0, w, h);
         const breath = 1 + Math.sin(tt * 0.0015) * 0.04;
         const deceased = window._bonnetDeceased;
@@ -1092,7 +1093,7 @@ function sceneBonnet() {
           const isDead = deceased && deceased.has(idx);
           ctx.beginPath();
           ctx.arc(d.tx, d.ty, isDead ? dotR * 0.85 : dotR * breath, 0, Math.PI * 2);
-          ctx.fillStyle = isDead ? '#3a3530' : d.color;
+          ctx.fillStyle = isDead ? '#a8a098' : d.color;
           ctx.shadowColor = isDead ? 'transparent' : d.color;
           ctx.shadowBlur = isDead ? 0 : 8;
           ctx.globalAlpha = isDead ? 0.5 : 0.85;
@@ -1117,7 +1118,7 @@ function sceneBonnet() {
     num7.setAttribute('x', stackXL * scaleX);
     num7.setAttribute('y', (baseY - 8 * layerH) * scaleY);
     num7.setAttribute('text-anchor', 'middle');
-    num7.setAttribute('fill', '#6a6258');
+    num7.setAttribute('fill', '#6e655a');
     num7.setAttribute('font-family', 'Fraunces');
     num7.setAttribute('font-weight', '300');
     num7.setAttribute('font-size', '180');
@@ -1131,7 +1132,7 @@ function sceneBonnet() {
     arrow.setAttribute('x', cx * scaleX);
     arrow.setAttribute('y', (baseY - 6 * layerH) * scaleY);
     arrow.setAttribute('text-anchor', 'middle');
-    arrow.setAttribute('fill', '#f5efe4');
+    arrow.setAttribute('fill', '#1a1612');
     arrow.setAttribute('font-family', 'Fraunces');
     arrow.setAttribute('font-weight', '200');
     arrow.setAttribute('font-size', '90');
@@ -1145,12 +1146,12 @@ function sceneBonnet() {
     num3.setAttribute('x', stackXR * scaleX);
     num3.setAttribute('y', (baseY - 8 * layerH) * scaleY);
     num3.setAttribute('text-anchor', 'middle');
-    num3.setAttribute('fill', '#d63f1f');
+    num3.setAttribute('fill', '#b22817');
     num3.setAttribute('font-family', 'Fraunces');
     num3.setAttribute('font-weight', '300');
     num3.setAttribute('font-size', '180');
     num3.setAttribute('opacity', 0);
-    num3.setAttribute('filter', 'drop-shadow(0 0 20px #d63f1f)');
+    num3.setAttribute('filter', 'drop-shadow(0 0 2px #d63f1f)');
     num3.textContent = '3';
     overlay.appendChild(num3);
     num3.style.transition = 'opacity 1.2s ease 0.8s';
@@ -1161,7 +1162,7 @@ function sceneBonnet() {
     lblT.setAttribute('x', cx * scaleX);
     lblT.setAttribute('y', (baseY + 80) * scaleY);
     lblT.setAttribute('text-anchor', 'middle');
-    lblT.setAttribute('fill', '#6a6258');
+    lblT.setAttribute('fill', '#6e655a');
     lblT.setAttribute('font-family', 'JetBrains Mono');
     lblT.setAttribute('font-size', '14');
     lblT.setAttribute('letter-spacing', '0.4em');
@@ -1176,7 +1177,7 @@ function sceneBonnet() {
     everyDot.setAttribute('x', cx * scaleX);
     everyDot.setAttribute('y', (baseY + 130) * scaleY);
     everyDot.setAttribute('text-anchor', 'middle');
-    everyDot.setAttribute('fill', '#f5efe4');
+    everyDot.setAttribute('fill', '#1a1612');
     everyDot.setAttribute('font-family', 'Fraunces');
     everyDot.setAttribute('font-style', 'italic');
     everyDot.setAttribute('font-weight', '300');
@@ -1214,13 +1215,13 @@ function sceneSixBg() {
       x: rand(0, w), y: rand(0, h),
       vx: rand(-0.15, 0.15), vy: rand(-0.15, 0.15),
       r: rand(0.5, 2),
-      hue: Math.random() < 0.5 ? '#e2b665' : '#d63f1f',
+      hue: Math.random() < 0.5 ? '#b8841f' : '#b22817',
       a: rand(0.2, 0.6)
     });
   }
 
   function frame() {
-    ctx.fillStyle = 'rgba(7, 6, 10, 0.15)';
+    ctx.fillStyle = 'rgba(250, 247, 242, 0.18)';
     ctx.fillRect(0, 0, w, h);
     motes.forEach(m => {
       m.x += m.vx; m.y += m.vy;
@@ -1231,7 +1232,7 @@ function sceneSixBg() {
       ctx.fillStyle = m.hue;
       ctx.globalAlpha = m.a;
       ctx.shadowColor = m.hue;
-      ctx.shadowBlur = 8;
+      ctx.shadowBlur = 3;
       ctx.fill();
     });
     ctx.shadowBlur = 0;
@@ -1258,17 +1259,17 @@ function sceneScatter() {
   for (let i = 0; i < 118; i++) {
     const x = rand(200, 450);
     const y = 1.4 * x + 100 + rand(-180, 180);
-    points.push({ cx: x, fy: Math.max(50, y), color: '#6ba0b4' });
+    points.push({ cx: x, fy: Math.max(50, y), color: '#2c6378' });
   }
   for (let i = 0; i < 265; i++) {
     const x = rand(50, 700);
     const y = 1.3 * x + 80 + rand(-200, 200);
-    points.push({ cx: x, fy: Math.max(40, y), color: '#d63f1f' });
+    points.push({ cx: x, fy: Math.max(40, y), color: '#b22817' });
   }
   for (let i = 0; i < 52; i++) {
     const x = rand(300, 720);
     const y = 1.2 * x + 200 + rand(-220, 220);
-    points.push({ cx: x, fy: Math.max(50, y), color: '#e2b665' });
+    points.push({ cx: x, fy: Math.max(50, y), color: '#b8841f' });
   }
 
   const xMax = 800, yMax = 1100;
@@ -1307,7 +1308,7 @@ function sceneScatter() {
 
   function frame(now) {
     const t = now - t0;
-    ctx.fillStyle = 'rgba(7, 6, 10, 0.16)';
+    ctx.fillStyle = 'rgba(250, 247, 242, 0.18)';
     ctx.fillRect(0, 0, w, h);
 
     if (t > 3500) {
@@ -1355,16 +1356,16 @@ function sceneScatter() {
         } else {
           const pulse = Math.sin(t * 0.001 + p.pulse) * 0.3 + 1;
           r = p.r * pulse;
-          glow = 8 + pulse * 4;
+          glow = 3 + pulse * 1.5;
         }
       } else {
-        glow = 12;
+        glow = 5;
       }
 
       ctx.beginPath();
       ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
       if (p.deceased) {
-        ctx.fillStyle = '#3a3530';
+        ctx.fillStyle = '#a8a098';
         ctx.shadowBlur = 0;
         ctx.globalAlpha = 0.5;
       } else {
@@ -1393,7 +1394,7 @@ function sceneScatter() {
     rText.setAttribute('x', 1600 * 0.78);
     rText.setAttribute('y', 900 * 0.32);
     rText.setAttribute('text-anchor', 'middle');
-    rText.setAttribute('fill', '#f5efe4');
+    rText.setAttribute('fill', '#1a1612');
     rText.setAttribute('font-family', 'Fraunces');
     rText.setAttribute('font-weight', '200');
     rText.setAttribute('font-style', 'italic');
@@ -1406,7 +1407,7 @@ function sceneScatter() {
     eqText.setAttribute('x', 1600 * 0.78);
     eqText.setAttribute('y', 900 * 0.48);
     eqText.setAttribute('text-anchor', 'middle');
-    eqText.setAttribute('fill', '#e2b665');
+    eqText.setAttribute('fill', '#b8841f');
     eqText.setAttribute('font-family', 'Fraunces');
     eqText.setAttribute('font-weight', '200');
     eqText.setAttribute('font-size', '120');
@@ -1427,7 +1428,7 @@ function sceneScatter() {
     everyDot2.setAttribute('x', 1600 * 0.5);
     everyDot2.setAttribute('y', 900 * 0.93);
     everyDot2.setAttribute('text-anchor', 'middle');
-    everyDot2.setAttribute('fill', '#f5efe4');
+    everyDot2.setAttribute('fill', '#1a1612');
     everyDot2.setAttribute('font-family', 'Fraunces');
     everyDot2.setAttribute('font-style', 'italic');
     everyDot2.setAttribute('font-weight', '300');
@@ -1494,14 +1495,14 @@ function sceneExtreme() {
 
   function frame(now) {
     const t = now - t0;
-    ctx.fillStyle = 'rgba(7, 6, 10, 0.18)';
+    ctx.fillStyle = 'rgba(250, 247, 242, 0.20)';
     ctx.fillRect(0, 0, w, h);
 
     if (t > 2500) {
       const a = Math.min(0.07, (t - 2500) / 4000);
       const grad = ctx.createLinearGradient(0, h, 0, 0);
-      grad.addColorStop(0, `rgba(214,63,31,${a})`);
-      grad.addColorStop(1, 'rgba(214,63,31,0)');
+      grad.addColorStop(0, `rgba(178, 40, 23,${a})`);
+      grad.addColorStop(1, 'rgba(178, 40, 23,0)');
       ctx.fillStyle = grad;
       ctx.fillRect(margin.left, margin.top, innerW, innerH);
     }
@@ -1522,13 +1523,13 @@ function sceneExtreme() {
       ctx.beginPath();
       ctx.arc(x + twitchX, y + twitchY, p.r, 0, Math.PI * 2);
       if (p.deceased) {
-        ctx.fillStyle = '#3a3530';
+        ctx.fillStyle = '#a8a098';
         ctx.shadowBlur = 0;
         ctx.globalAlpha = 0.5;
       } else {
-        ctx.fillStyle = '#d63f1f';
-        ctx.shadowColor = '#ff5a36';
-        ctx.shadowBlur = 14;
+        ctx.fillStyle = '#b22817';
+        ctx.shadowColor = '#c73219';
+        ctx.shadowBlur = 2;
         ctx.globalAlpha = 0.85;
       }
       ctx.fill();
@@ -1548,7 +1549,7 @@ function sceneExtreme() {
     rText.setAttribute('x', 1600 * 0.78);
     rText.setAttribute('y', 900 * 0.32);
     rText.setAttribute('text-anchor', 'middle');
-    rText.setAttribute('fill', '#f5efe4');
+    rText.setAttribute('fill', '#1a1612');
     rText.setAttribute('font-family', 'Fraunces');
     rText.setAttribute('font-weight', '200');
     rText.setAttribute('font-style', 'italic');
@@ -1561,12 +1562,12 @@ function sceneExtreme() {
     eqText.setAttribute('x', 1600 * 0.78);
     eqText.setAttribute('y', 900 * 0.50);
     eqText.setAttribute('text-anchor', 'middle');
-    eqText.setAttribute('fill', '#d63f1f');
+    eqText.setAttribute('fill', '#b22817');
     eqText.setAttribute('font-family', 'Fraunces');
     eqText.setAttribute('font-weight', '300');
     eqText.setAttribute('font-size', '140');
     eqText.setAttribute('opacity', '0');
-    eqText.setAttribute('filter', 'drop-shadow(0 0 30px #d63f1f)');
+    eqText.setAttribute('filter', 'drop-shadow(0 0 3px #d63f1f)');
     eqText.textContent = '0.20';
     overlay.appendChild(eqText);
 
@@ -1600,7 +1601,7 @@ function sceneExtreme() {
     subLbl.setAttribute('x', 1600 * 0.78);
     subLbl.setAttribute('y', 900 * 0.62);
     subLbl.setAttribute('text-anchor', 'middle');
-    subLbl.setAttribute('fill', '#6a6258');
+    subLbl.setAttribute('fill', '#6e655a');
     subLbl.setAttribute('font-family', 'JetBrains Mono');
     subLbl.setAttribute('font-size', '14');
     subLbl.setAttribute('letter-spacing', '0.3em');
@@ -1614,7 +1615,7 @@ function sceneExtreme() {
     captionA.setAttribute('x', 1600 * 0.5);
     captionA.setAttribute('y', 900 * 0.88);
     captionA.setAttribute('text-anchor', 'middle');
-    captionA.setAttribute('fill', '#f5efe4');
+    captionA.setAttribute('fill', '#1a1612');
     captionA.setAttribute('font-family', 'Fraunces');
     captionA.setAttribute('font-style', 'italic');
     captionA.setAttribute('font-weight', '300');
@@ -1629,7 +1630,7 @@ function sceneExtreme() {
     caption.setAttribute('x', 1600 * 0.5);
     caption.setAttribute('y', 900 * 0.95);
     caption.setAttribute('text-anchor', 'middle');
-    caption.setAttribute('fill', '#d63f1f');
+    caption.setAttribute('fill', '#b22817');
     caption.setAttribute('font-family', 'Fraunces');
     caption.setAttribute('font-style', 'italic');
     caption.setAttribute('font-weight', '300');
@@ -1692,9 +1693,9 @@ function sceneHyperbola() {
   grad.setAttribute('x1', '0'); grad.setAttribute('y1', '1');
   grad.setAttribute('x2', '1'); grad.setAttribute('y2', '0');
   grad.innerHTML = `
-    <stop offset="0%" stop-color="#6ba0b4" stop-opacity="0.8"/>
-    <stop offset="60%" stop-color="#e2b665" stop-opacity="0.95"/>
-    <stop offset="100%" stop-color="#d63f1f" stop-opacity="1"/>
+    <stop offset="0%" stop-color="#2c6378" stop-opacity="0.8"/>
+    <stop offset="60%" stop-color="#b8841f" stop-opacity="0.95"/>
+    <stop offset="100%" stop-color="#b22817" stop-opacity="1"/>
   `;
   defs.appendChild(grad);
   svg.appendChild(defs);
@@ -1705,7 +1706,7 @@ function sceneHyperbola() {
   xAxis.setAttribute('x2', margin.left + innerW);
   xAxis.setAttribute('y1', margin.top + innerH);
   xAxis.setAttribute('y2', margin.top + innerH);
-  xAxis.setAttribute('stroke', '#2a2620');
+  xAxis.setAttribute('stroke', '#c8bfb1');
   xAxis.setAttribute('stroke-width', 1);
   xAxis.setAttribute('opacity', 0);
   svg.appendChild(xAxis);
@@ -1717,7 +1718,7 @@ function sceneHyperbola() {
   yAxis.setAttribute('x2', margin.left);
   yAxis.setAttribute('y1', margin.top);
   yAxis.setAttribute('y2', margin.top + innerH);
-  yAxis.setAttribute('stroke', '#2a2620');
+  yAxis.setAttribute('stroke', '#c8bfb1');
   yAxis.setAttribute('stroke-width', 1);
   yAxis.setAttribute('opacity', 0);
   svg.appendChild(yAxis);
@@ -1730,7 +1731,7 @@ function sceneHyperbola() {
     tk.setAttribute('x', dx(ma));
     tk.setAttribute('y', margin.top + innerH + 25);
     tk.setAttribute('text-anchor', 'middle');
-    tk.setAttribute('fill', '#6a6258');
+    tk.setAttribute('fill', '#6e655a');
     tk.setAttribute('font-family', 'JetBrains Mono');
     tk.setAttribute('font-size', '12');
     tk.setAttribute('opacity', 0);
@@ -1744,7 +1745,7 @@ function sceneHyperbola() {
   xLbl.setAttribute('x', margin.left + innerW / 2);
   xLbl.setAttribute('y', margin.top + innerH + 60);
   xLbl.setAttribute('text-anchor', 'middle');
-  xLbl.setAttribute('fill', '#6a6258');
+  xLbl.setAttribute('fill', '#6e655a');
   xLbl.setAttribute('font-family', 'JetBrains Mono');
   xLbl.setAttribute('font-size', '13');
   xLbl.setAttribute('letter-spacing', '0.4em');
@@ -1758,7 +1759,7 @@ function sceneHyperbola() {
   yLbl.setAttribute('x', margin.left - 60);
   yLbl.setAttribute('y', margin.top + innerH / 2);
   yLbl.setAttribute('text-anchor', 'middle');
-  yLbl.setAttribute('fill', '#6a6258');
+  yLbl.setAttribute('fill', '#6e655a');
   yLbl.setAttribute('font-family', 'JetBrains Mono');
   yLbl.setAttribute('font-size', '13');
   yLbl.setAttribute('letter-spacing', '0.3em');
@@ -1784,7 +1785,7 @@ function sceneHyperbola() {
   curve.setAttribute('stroke', 'url(#curveGrad)');
   curve.setAttribute('stroke-width', 3);
   curve.setAttribute('fill', 'none');
-  curve.setAttribute('filter', 'drop-shadow(0 0 8px rgba(226,182,101,0.4))');
+  curve.setAttribute('filter', 'drop-shadow(0 0 3px rgba(184, 132, 31,0.4))');
   svg.appendChild(curve);
 
   const length = curve.getTotalLength();
@@ -1798,10 +1799,10 @@ function sceneHyperbola() {
     // Traveler dot
     const traveler = document.createElementNS(NS, 'circle');
     traveler.setAttribute('r', 8);
-    traveler.setAttribute('fill', '#f5efe4');
+    traveler.setAttribute('fill', '#1a1612');
     traveler.setAttribute('cx', cPts[0].px);
     traveler.setAttribute('cy', cPts[0].py);
-    traveler.setAttribute('filter', 'drop-shadow(0 0 16px #ffffff)');
+    traveler.setAttribute('filter', 'drop-shadow(0 0 5px #ffffff)');
     svg.appendChild(traveler);
 
     // Readout group (top right)
@@ -1810,7 +1811,7 @@ function sceneHyperbola() {
     const lblMA = document.createElementNS(NS, 'text');
     lblMA.setAttribute('x', readoutX);
     lblMA.setAttribute('y', margin.top + 30);
-    lblMA.setAttribute('fill', '#6a6258');
+    lblMA.setAttribute('fill', '#6e655a');
     lblMA.setAttribute('font-family', 'JetBrains Mono');
     lblMA.setAttribute('font-size', '12');
     lblMA.setAttribute('letter-spacing', '0.3em');
@@ -1821,7 +1822,7 @@ function sceneHyperbola() {
     const valMA = document.createElementNS(NS, 'text');
     valMA.setAttribute('x', readoutX);
     valMA.setAttribute('y', margin.top + 80);
-    valMA.setAttribute('fill', '#f5efe4');
+    valMA.setAttribute('fill', '#1a1612');
     valMA.setAttribute('font-family', 'Fraunces');
     valMA.setAttribute('font-weight', '200');
     valMA.setAttribute('font-size', '54');
@@ -1831,7 +1832,7 @@ function sceneHyperbola() {
     const lblG = document.createElementNS(NS, 'text');
     lblG.setAttribute('x', readoutX);
     lblG.setAttribute('y', margin.top + 160);
-    lblG.setAttribute('fill', '#6a6258');
+    lblG.setAttribute('fill', '#6e655a');
     lblG.setAttribute('font-family', 'JetBrains Mono');
     lblG.setAttribute('font-size', '12');
     lblG.setAttribute('letter-spacing', '0.3em');
@@ -1842,7 +1843,7 @@ function sceneHyperbola() {
     const valG = document.createElementNS(NS, 'text');
     valG.setAttribute('x', readoutX);
     valG.setAttribute('y', margin.top + 230);
-    valG.setAttribute('fill', '#e2b665');
+    valG.setAttribute('fill', '#b8841f');
     valG.setAttribute('font-family', 'Fraunces');
     valG.setAttribute('font-weight', '200');
     valG.setAttribute('font-size', '54');
@@ -1892,11 +1893,11 @@ function sceneHyperbola() {
       // G color shifts from gold → red as it explodes
       const t2 = ma / maxMA;
       if (t2 > 0.7) {
-        valG.setAttribute('fill', '#d63f1f');
-        valG.setAttribute('filter', 'drop-shadow(0 0 12px #d63f1f)');
+        valG.setAttribute('fill', '#b22817');
+        valG.setAttribute('filter', 'drop-shadow(0 0 1px #d63f1f)');
       } else if (t2 > 0.5) {
-        valG.setAttribute('fill', '#e2b665');
-        valG.setAttribute('filter', 'drop-shadow(0 0 8px #e2b665)');
+        valG.setAttribute('fill', '#b8841f');
+        valG.setAttribute('filter', 'drop-shadow(0 0 3px #e2b665)');
       }
 
       // At each waypoint, drop a "ghost" marker with that MA→G ratio
@@ -1912,7 +1913,7 @@ function sceneHyperbola() {
         ghostLine.setAttribute('x2', sx);
         ghostLine.setAttribute('y1', sy);
         ghostLine.setAttribute('y2', margin.top + innerH);
-        ghostLine.setAttribute('stroke', stopIdx >= 2 ? '#d63f1f' : '#6a6258');
+        ghostLine.setAttribute('stroke', stopIdx >= 2 ? '#b22817' : '#6e655a');
         ghostLine.setAttribute('stroke-width', 0.7);
         ghostLine.setAttribute('stroke-dasharray', '2 4');
         ghostLine.setAttribute('opacity', 0);
@@ -1926,7 +1927,7 @@ function sceneHyperbola() {
         ghostHLine.setAttribute('x2', sx);
         ghostHLine.setAttribute('y1', sy);
         ghostHLine.setAttribute('y2', sy);
-        ghostHLine.setAttribute('stroke', stopIdx >= 2 ? '#d63f1f' : '#6a6258');
+        ghostHLine.setAttribute('stroke', stopIdx >= 2 ? '#b22817' : '#6e655a');
         ghostHLine.setAttribute('stroke-width', 0.7);
         ghostHLine.setAttribute('stroke-dasharray', '2 4');
         ghostHLine.setAttribute('opacity', 0);
@@ -1939,7 +1940,7 @@ function sceneHyperbola() {
         ghostDot.setAttribute('cx', sx);
         ghostDot.setAttribute('cy', sy);
         ghostDot.setAttribute('r', 0);
-        ghostDot.setAttribute('fill', stopIdx >= 2 ? '#d63f1f' : '#e2b665');
+        ghostDot.setAttribute('fill', stopIdx >= 2 ? '#b22817' : '#b8841f');
         svg.appendChild(ghostDot);
         ghostDot.style.transition = 'r 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
         setTimeout(() => ghostDot.setAttribute('r', '4'), 50);
@@ -1961,7 +1962,7 @@ function sceneHyperbola() {
       annotG.setAttribute('x', dx(85));
       annotG.setAttribute('y', dy(gFromMA(85)) - 30);
       annotG.setAttribute('text-anchor', 'middle');
-      annotG.setAttribute('fill', '#d63f1f');
+      annotG.setAttribute('fill', '#b22817');
       annotG.setAttribute('font-family', 'Fraunces');
       annotG.setAttribute('font-style', 'italic');
       annotG.setAttribute('font-weight', '300');
@@ -1993,7 +1994,7 @@ function sceneCrystals() {
     cup.setAttribute('cy', centerY);
     cup.setAttribute('r', radius);
     cup.setAttribute('fill', 'none');
-    cup.setAttribute('stroke', '#2a2620');
+    cup.setAttribute('stroke', '#c8bfb1');
     cup.setAttribute('stroke-width', 1);
     cup.setAttribute('opacity', 0);
     svg.appendChild(cup);
@@ -2004,7 +2005,7 @@ function sceneCrystals() {
     pin.setAttribute('cx', centerX);
     pin.setAttribute('cy', centerY);
     pin.setAttribute('r', 12);
-    pin.setAttribute('fill', '#f5efe4');
+    pin.setAttribute('fill', '#1a1612');
     pin.setAttribute('opacity', 0);
     svg.appendChild(pin);
     pin.style.transition = 'opacity 1.5s ease 0.5s';
@@ -2062,7 +2063,7 @@ function sceneCrystals() {
         snap.setAttribute('cx', endX);
         snap.setAttribute('cy', endY);
         snap.setAttribute('r', 0);
-        snap.setAttribute('fill', '#ff5a36');
+        snap.setAttribute('fill', '#c73219');
         svg.appendChild(snap);
         snap.style.transition = `r 0.4s ease ${1.5 + i * 0.025}s`;
         setTimeout(() => snap.setAttribute('r', 1.2), 50);
@@ -2080,7 +2081,7 @@ function sceneCrystals() {
       plate.setAttribute('cx', px);
       plate.setAttribute('cy', py);
       plate.setAttribute('r', 0);
-      plate.setAttribute('fill', '#d63f1f');
+      plate.setAttribute('fill', '#b22817');
       plate.setAttribute('opacity', isHigh ? 0.3 : 0.7);
       svg.appendChild(plate);
 
@@ -2091,13 +2092,13 @@ function sceneCrystals() {
     }
   }
 
-  buildCrystal(W * 0.3, H * 0.5, 70, true, '#6ba0b4');
-  buildCrystal(W * 0.7, H * 0.5, 22, false, '#d63f1f');
+  buildCrystal(W * 0.3, H * 0.5, 70, true, '#2c6378');
+  buildCrystal(W * 0.7, H * 0.5, 22, false, '#b22817');
 
   setTimeout(() => {
     const labels = [
-      { x: W * 0.3, y: H * 0.85, txt: '350', sub: 'mg · dL⁻¹', color: '#6ba0b4' },
-      { x: W * 0.7, y: H * 0.85, txt: '< 150', sub: 'mg · dL⁻¹', color: '#d63f1f' }
+      { x: W * 0.3, y: H * 0.85, txt: '350', sub: 'mg · dL⁻¹', color: '#2c6378' },
+      { x: W * 0.7, y: H * 0.85, txt: '< 150', sub: 'mg · dL⁻¹', color: '#b22817' }
     ];
     labels.forEach((l, i) => {
       const num = document.createElementNS(NS, 'text');
@@ -2118,7 +2119,7 @@ function sceneCrystals() {
       sub.setAttribute('x', l.x);
       sub.setAttribute('y', l.y + 35);
       sub.setAttribute('text-anchor', 'middle');
-      sub.setAttribute('fill', '#6a6258');
+      sub.setAttribute('fill', '#6e655a');
       sub.setAttribute('font-family', 'JetBrains Mono');
       sub.setAttribute('font-weight', '300');
       sub.setAttribute('font-size', '14');
@@ -2145,7 +2146,7 @@ function sceneFinal() {
       x: rand(0, w), y: rand(0, h),
       vx: rand(-0.3, 0.3), vy: rand(-0.4, -0.1),
       r: rand(1, 3),
-      color: ['#d63f1f', '#e2b665', '#6ba0b4'][Math.floor(rand(0, 3))],
+      color: ['#b22817', '#b8841f', '#2c6378'][Math.floor(rand(0, 3))],
       a: rand(0.2, 0.7),
       life: rand(8000, 15000),
       born: performance.now() + rand(0, 3000)
@@ -2177,7 +2178,7 @@ function sceneFinal() {
       ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2);
       ctx.fillStyle = e.color;
       ctx.shadowColor = e.color;
-      ctx.shadowBlur = 6;
+      ctx.shadowBlur = 2;
       ctx.globalAlpha = a;
       ctx.fill();
     });
